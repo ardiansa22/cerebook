@@ -32,6 +32,7 @@ class Books extends MainBase
         'price' => '',
         'stock' => '',
         'category_id' => '',
+        'genre_id' => '',
         'image' => '',
         'selectedGenres' => [] // Tambahkan ini
     ];
