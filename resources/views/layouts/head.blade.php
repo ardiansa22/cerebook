@@ -60,15 +60,5 @@
             color: #dc2239;
         }
         
-        /* Atur ukuran slide untuk mobile */
-        @media (max-width: 480px) {
-            .swiper-slide {
-                width: 80% !important;  /* Lebih kecil dari 100% untuk melihat sebagian slide berikutnya */
-            }
-        }
-        .swiper-container {
-    width: 100%;
-    padding: 0 10px;
-}
         
     </style>
