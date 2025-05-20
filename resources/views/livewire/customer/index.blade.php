@@ -132,7 +132,7 @@
             <div class="swiper-container mt-6">
                 <h6 class="text-lg font-bold mb-4 flex items-center gap-2">
                     Buku Populer untuk Anda 
-                    <i class="fas fa-arrow-right text-red-500"></i>
+                    <i class="fas fa-arrow-right text-blue-500"></i>
                 </h6>
                 <div class="swiper-wrapper">
                     @foreach ($books as $book)
@@ -143,7 +143,7 @@
                                 <h6 class="text-md font-semibold text-gray-800 truncate" title="{{ $book->title }}">
                                     {{ $book->title }}
                                 </h6>
-                                <span class="font-medium text-gray-800">{{ $book->price }}</span>
+                                <span class="font-medium text-gray-800">{{ $book->price }}</span></p>
                                 <a href="#" class="inline-block mt-3 bg-red-500 text-white text-sm px-4 py-1.5 rounded-md hover:bg-blue-700 transition">
                                     Lihat Detail
                                 </a>

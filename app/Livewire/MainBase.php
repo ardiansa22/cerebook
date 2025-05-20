@@ -62,20 +62,25 @@ abstract class MainBase extends Component
     public function uploadImage($imageFile, $directory, $oldFile = null)
 {
     if ($imageFile) {
-        $path = 'private/public/' . $directory;
-
+        // Gunakan path relatif tanpa 'private/public/'
+        $path = $directory; // Contoh: 'books'
+        
+        // Hapus file lama jika ada (gunakan disk 'public')
         if ($oldFile) {
-            Storage::disk('local')->delete($path . '/' . $oldFile);
+            Storage::disk('public')->delete($path . '/' . $oldFile);
         }
-
-        $filename = $imageFile->getClientOriginalName();
-        $uniqueName = uniqid() . '_' . $filename;
-
-        $imageFile->storeAs($path, $uniqueName, 'local');
-
+        
+        // Generate nama file unik
+        $originalName = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+        $extension = $imageFile->getClientOriginalExtension();
+        $uniqueName = $originalName . '_' . uniqid() . '.' . $extension;
+        
+        // Simpan menggunakan disk 'public'
+        $imageFile->storeAs($path, $uniqueName, 'public');
+        
         return $uniqueName;
     }
-
+    
     return null;
 }
 
