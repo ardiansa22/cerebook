@@ -99,14 +99,15 @@ abstract class MainBase extends Component
 
     // Store function
     public function store()
-    {
+{
+    try {
         $this->validate($this->getValidationRules());
-
         $record = $this->model::create($this->fields);
 
-        if (property_exists($this, 'selectedGenres')) {
+       if (property_exists($this, 'selectedGenres') && method_exists($record, 'genres')) {
             $record->genres()->sync($this->selectedGenres);
         }
+
 
         if ($this->image) {
             $record->update([
@@ -116,7 +117,11 @@ abstract class MainBase extends Component
 
         $this->resetInput();
         $this->showNotification(class_basename($this->model) . ' created successfully.');
+    } catch (\Throwable $e) {
+        $this->showNotification('Error: ' . $e->getMessage(), 'error');
     }
+}
+
 
     // Update function
     public function update($id)
@@ -133,9 +138,10 @@ abstract class MainBase extends Component
 
         $record->update($data);
 
-        if (property_exists($this, 'selectedGenres')) {
+       if (property_exists($this, 'selectedGenres') && method_exists($record, 'genres')) {
             $this->syncRelations($record, 'genres', $this->selectedGenres);
         }
+
 
         $this->resetInput();
         $this->showNotification(class_basename($this->model) . ' updated successfully.');

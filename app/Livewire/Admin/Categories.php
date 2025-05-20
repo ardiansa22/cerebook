@@ -16,11 +16,18 @@ class Categories extends MainBase
         $this->searchableFields = ['name'];
     }
 
+    public function getValidationRules()
+    {
+        return [
+            'fields.name' => 'required|string|max:255|unique:categories,name,' . $this->editingId,
+        ];
+    }
+
     public function render()
     {
         $query = $this->getQuery($this->model);
         $categories = $query->paginate($this->perPage);
-        
+
         return view('livewire.admin.categories', [
             'categories' => $categories
         ]);

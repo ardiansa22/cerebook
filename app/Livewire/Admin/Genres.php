@@ -4,7 +4,6 @@ namespace App\Livewire\Admin;
 
 use App\Livewire\MainBase;
 use App\Models\Genre;
-use Livewire\Component;
 
 class Genres extends MainBase
 {
@@ -15,6 +14,14 @@ class Genres extends MainBase
             'name' => '',
         ];
         $this->searchableFields = ['name'];
+    }
+
+    // Override rules khusus genre (tidak perlu validasi selectedGenres)
+    protected function getValidationRules()
+    {
+        return [
+            'fields.name' => 'required|string|max:255',
+        ];
     }
 
     public function render()
