@@ -9,11 +9,13 @@ use App\Livewire\Admin\Genres;
 use App\Livewire\Admin\Dashboard; // Tambahkan use statement untuk Dashboard
 use App\Livewire\Admin\Mybook;
 use App\Livewire\Customer\Index;
+use App\Livewire\Customer\MyBooks;
 use App\Livewire\Customer\ShowProduct;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/',Index::class)->name('home');
 Route::get('/book/{book}', ShowProduct::class)->name('book.show');
+Route::get('/my-books', MyBooks::class)->name('my-books');
 
 Route::get('dashboard', Dashboard::class) // Ubah Route::view menjadi Route::get dan panggil class Dashboard
     ->middleware(['auth', 'verified'])

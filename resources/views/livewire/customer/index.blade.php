@@ -110,8 +110,8 @@
                     <img src="{{ asset('storage/books/' . $book->image) }}" class="card-img-top" alt="Gambar 1">
                     <div class="card-body text-start">
                         <h6 class="card-title">{{$book->title}}</h6>
-                        <p class="text-muted">Harga : {{$book->price}}</p>
-                        <p class="text-muted">Stok : {{$book->stock}}</p>
+                        <p class="text-muted">{{$book->price}}</p>
+                        <!-- <p class="text-muted">Stok : {{$book->stock}}</p> -->
                     </div>
                     <a href="{{route('book.show',$book->id)}}">Detail</a>
                 </div>
