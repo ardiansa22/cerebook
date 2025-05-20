@@ -59,40 +59,5 @@
         .mobile-navbar .nav-item:hover {
             color: #dc2239;
         }
-        <style>
-    .swiper-container {
-        width: 100%;
-        padding: 10px 0;
-    }
-    
-    .swiper-slide {
-        width: 200px; /* Atur lebar card sesuai kebutuhan */
-        height: auto;
-    }
-    
-    .swiper-button-next,
-    .swiper-button-prev {
-        color: #ef4444; /* Warna merah seperti bg-red-500 */
-        background: white;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .swiper-button-next::after,
-    .swiper-button-prev::after {
-        font-size: 14px;
-        font-weight: bold;
-    }
-    
-    @media (max-width: 640px) {
-        .swiper-slide {
-            width: 160px; /* Lebar lebih kecil untuk mobile */
-        }
-    }
-</style>
+        
     </style>

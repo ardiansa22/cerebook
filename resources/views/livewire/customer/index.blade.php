@@ -129,34 +129,29 @@
             </div>
 
             <!-- Swiper Carousel -->
-            <!-- Swiper Carousel -->
-<div class="mt-6">
-    <h6 class="text-lg font-bold mb-4 flex items-center gap-2">
-        Buku Populer untuk Anda 
-        <i class="fas fa-arrow-right text-red-500"></i>
-    </h6>
-    <div class="swiper-container">
-        <div class="swiper-wrapper">
-            @foreach ($books as $book)
-            <div class="swiper-slide">
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform hover:-translate-y-1 hover:shadow-xl duration-300 h-full">
-                    <img src="{{ asset('storage/books/' . $book->image) }}" alt="Book Cover" class="w-full h-40 object-cover">
-                    <div class="p-4">
-                        <h6 class="text-md font-semibold text-gray-800 truncate" title="{{ $book->title }}">
-                            {{ $book->title }}
-                        </h6>
-                        <span class="font-medium text-gray-800">{{ $book->price }}</span>
-                        <a href="#" class="inline-block mt-3 bg-red-500 text-white text-sm px-4 py-1.5 rounded-md hover:bg-blue-700 transition">
-                            Lihat Detail
-                        </a>
+            <div class="swiper-container mt-6">
+                <h6 class="text-lg font-bold mb-4 flex items-center gap-2">
+                    Buku Populer untuk Anda 
+                    <i class="fas fa-arrow-right text-red-500"></i>
+                </h6>
+                <div class="swiper-wrapper">
+                    @foreach ($books as $book)
+                    <div class="swiper-slide">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-transform hover:-translate-y-1 hover:shadow-xl duration-300">
+                            <img src="{{ asset('storage/books/' . $book->image) }}" alt="Book Cover" class="w-full h-40 object-cover">
+                            <div class="p-4">
+                                <h6 class="text-md font-semibold text-gray-800 truncate" title="{{ $book->title }}">
+                                    {{ $book->title }}
+                                </h6>
+                                <span class="font-medium text-gray-800">{{ $book->price }}</span>
+                                <a href="#" class="inline-block mt-3 bg-red-500 text-white text-sm px-4 py-1.5 rounded-md hover:bg-blue-700 transition">
+                                    Lihat Detail
+                                </a>
+                            </div>
+                        </div>
                     </div>
+                    @endforeach
                 </div>
             </div>
-            @endforeach
-        </div>
-        <!-- Add navigation buttons -->
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-    </div>
-</div>
+
         </div>
