@@ -13,7 +13,7 @@ class Index extends Component
         $books = Book::all();
         return view('livewire.customer.index',[
             'books' => $books,
-        ])->layout('layouts.app');;
+        ])->layout('layouts.app');
     }
     
 }

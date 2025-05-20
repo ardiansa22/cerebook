@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px; /* Sesuaikan tinggi warna biru */
+  background: #dc2239;
+  z-index: -1;
+}
+.btn-prim{
+  background-color: #dc2239;
+  color: white;
+}
+
+.greeting-card {
+  border-radius: 12px;
+  background: linear-gradient(135deg, #dc2239, #ebedee);
+  border: none;
+  transition: 0.3s ease-in-out;
+}
+
+.greeting-card:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.greeting-card h5 {
+  color: #2c3e50;
+}
+
+.weather-info i {
+  font-size: 24px;
+}
+
+.weather-info p {
+  font-size: 14px;
+}
+
+.category-icon {
+  width: 50px;
+  height: 50px;
+  background: #dc2239;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color:white;
+}
+
+.category-img {
+  width: 60px;  /* Lebarkan */
+    height: auto; /* Sesuaikan */
+    filter: brightness(0) invert(1);
+}
+.category-img-goldfish {
+  width: 40px;  /* Lebarkan */
+    height: auto; /* Sesuaikan */
+    filter: brightness(0) invert(1);
+}
+
+.swiper-container {
+    width: 100%;
+    overflow: hidden;
+}
+.swiper-tips {
+    width: 100%;
+    overflow: hidden;
+}
+.swiper-slide {
+    max-width: 300px; /* Batasi ukuran maksimal */
+}
+.swiper-slide img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+  .card {
+  /* max-height: 280px; */
+  /* border: 0; */
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(99, 127, 187, 0.1);
+  }
+  .card-body {
+    padding: 3px; /* Default 16px, dikurangi agar lebih compact */
+  }
+  .card-img-top {
+  width: 100%; /* Sesuaikan dengan lebar card */
+  height: 150px; /* Atur tinggi tetap */
+  object-fit: cover; /* Pastikan gambar tetap proporsional tanpa terdistorsi */
+  /* border-radius: 20px;   */
+  }
+  .mobile-navbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    border-top: 1px solid #ddd;
+    z-index: 1000; /* Agar selalu di atas */
+  }
+  
+  .mobile-navbar .nav-item {
+    text-align: center;
+    flex-grow: 1;
+    color: #555;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  
+  .mobile-navbar .nav-item i {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 3px;
+  }
+  
+  .mobile-navbar .nav-item:active,
+  .mobile-navbar .nav-item:hover {
+    color: #608BC1;
+  }
+  /* dasboard */
+  .dashboard{
+    padding-bottom: 20px;
+  }
+
+  /* Category Page */
+  .category{
+    padding-bottom: 70px;
+  } */
+  .card-category-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+/* Detail Page */
+.detail{
+  padding-bottom: 80px;
+}
+.title {
+  border-radius: 0;
+}
+.fasility {
+  border-radius: 0;
+}
+.detail .detail-card {
+  border: none;
+  background: linear-gradient(135deg, #dc2239, #ebedee);
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.detail .detail-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.detail .detail-img {
+  height: 200px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.detail .text-danger {
+  font-size: 1.2rem;
+}
+/* booking */
+.booking {
+  padding-bottom: 70px;
+}
+
+/* list */
+.list {
+  padding-bottom: 65px;
+}
+.card-header {
+  background-color: #dc2239;
+  color: white;
+}
+/* etiket */
+.etiket{
+  padding-bottom: 70px;
+}
+/* sesi */
+
+.sesi-card {
+  border-radius: 12px;
+  background: linear-gradient(135deg, #dc2239, #ebedee);
+  border: none;
+  transition: 0.3s ease-in-out;
+}
+
+.sesi-card:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sesi-card h5 {
+  color: #2c3e50;
+}

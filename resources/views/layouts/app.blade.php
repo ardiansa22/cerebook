@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     @include('layouts.head')
 </head>
-<body class="bg-gray-50">
-    @include('layouts.nav')
-    
-    <main>
-        @include('layouts.search')
-        
-        {{ $slot }}
+<body>
 
+    @include('layouts.nav')
+
+
+    <main>
+        {{$slot}}
     </main>
+
     @include('layouts.script')
+
 </body>
 </html>
