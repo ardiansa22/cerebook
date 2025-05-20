@@ -1,21 +1,21 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        var swiper = new Swiper('.swiper-container', {
-            slidesPerView: 3,
-            spaceBetween: 10,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            breakpoints: {
-                768: {
-                    slidesPerView: 3,
-                },
-                0: {
-                    slidesPerView: 2,
-                }
-            }
-        });
+        // var swiper = new Swiper('.swiper-container', {
+        //     slidesPerView: 3,
+        //     spaceBetween: 10,
+        //     pagination: {
+        //         el: '.swiper-pagination',
+        //         clickable: true,
+        //     },
+        //     breakpoints: {
+        //         768: {
+        //             slidesPerView: 3,
+        //         },
+        //         0: {
+        //             slidesPerView: 2,
+        //         }
+        //     }
+        // });
 
         function downloadTicket() {
             alert("E-Ticket akan diunduh! (Fitur ini bisa dikembangkan lebih lanjut)");
@@ -87,4 +87,22 @@
                 modal.classList.add('hidden');
             });
         });
+        
     </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const swiper = new Swiper('.swiper-container', {
+            slidesPerView: 'auto',
+            spaceBetween: 15,
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            breakpoints: {
+                640: {
+                    spaceBetween: 20
+                }
+            }
+        });
+    });
+</script>
