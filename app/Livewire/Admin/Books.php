@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use App\Models\Book;
 use App\Models\Category;
 use App\Livewire\MainBase;
+use App\Models\BookGenreCustom;
 use App\Models\Genre;
 use Livewire\WithPagination;
 
@@ -32,24 +33,28 @@ class Books extends MainBase
         'price' => '',
         'stock' => '',
         'category_id' => '',
-        'genre_id' => '',
         'image' => '',
         'selectedGenres' => [] // Tambahkan ini
+
     ];
         $this->categories = Category::where('is_active', true)->get();
         $this->genres = Genre::all(); // Load semua genre
     }
 
     public function render()
-    {
-        $books = $this->getQuery($this->model)
-                    ->with(['category', 'genres'])
-                    ->paginate($this->perPage);
-                    
-        return view('livewire.admin.book', [
-            'books' => $books,
-            'categories' => Category::where('is_active', true)->get(),
-            'genres' => $this->genres
-        ]);
-    }
+{
+    $books = $this->getQuery($this->model)
+                ->with(['category'])
+                ->paginate($this->perPage);
+
+    // Ambil mapping genre_ids per book_id
+    $bookGenreMap = BookGenreCustom::all()->keyBy('book_id');
+
+    return view('livewire.admin.book', [
+        'books' => $books,
+        'categories' => $this->categories,
+        'genres' => $this->genres,
+        'bookGenreMap' => $bookGenreMap
+    ]);
+}
 }

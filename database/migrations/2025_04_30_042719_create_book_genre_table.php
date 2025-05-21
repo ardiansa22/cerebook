@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('book_genre', function (Blueprint $table) {
-            $table->foreignId('book_id')->constrained()->cascadeOnDelete();
+        $table->foreignId('book_id')->constrained()->cascadeOnDelete();
         $table->foreignId('genre_id')->constrained()->cascadeOnDelete();
         $table->primary(['book_id', 'genre_id']);
         });

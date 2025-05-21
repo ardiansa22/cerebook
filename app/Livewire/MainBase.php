@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\BookGenreCustom;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -107,7 +108,13 @@ abstract class MainBase extends Component
 {
     try {
         $this->validate($this->getValidationRules());
-        $record = $this->model::create($this->fields);
+        // dd($this->fields);
+        $record = $this->model::create($this->fields);  
+        // Setelah berhasil create buku
+        BookGenreCustom::create([
+            'book_id' => $record->id,
+            'genre_ids' => $this->selectedGenres, // otomatis disimpan sebagai array -> JSON
+        ]); 
 
        if (property_exists($this, 'selectedGenres') && method_exists($record, 'genres')) {
             $record->genres()->sync($this->selectedGenres);
@@ -130,27 +137,39 @@ abstract class MainBase extends Component
 
     // Update function
     public function update($id)
-    {
-        $record = $this->model::findOrFail($id);
+{
+    $record = $this->model::findOrFail($id);
 
-        $this->validate($this->getValidationRules());
+    $this->validate($this->getValidationRules());
 
-        $data = $this->fields;
+    $data = $this->fields;
 
-        if ($this->image) {
-            $data['image'] = $this->uploadImage($this->image, $this->uploadDirectory, $this->oldImage);
-        }
-
-        $record->update($data);
-
-       if (property_exists($this, 'selectedGenres') && method_exists($record, 'genres')) {
-            $this->syncRelations($record, 'genres', $this->selectedGenres);
-        }
-
-
-        $this->resetInput();
-        $this->showNotification(class_basename($this->model) . ' updated successfully.');
+    if ($this->image) {
+        $data['image'] = $this->uploadImage($this->image, $this->uploadDirectory, $this->oldImage);
     }
+
+    $record->update($data);
+
+    // Hanya update book_genres_custom jika ada selectedGenres (tidak kosong)
+    if (!empty($this->selectedGenres)) {
+        \App\Models\BookGenreCustom::updateOrCreate(
+            ['book_id' => $record->id],
+            ['genre_ids' => $this->selectedGenres]
+        );
+    } else {
+        // Jika kosong, hapus record di book_genres_custom untuk buku ini (optional)
+        \App\Models\BookGenreCustom::where('book_id', $record->id)->delete();
+    }
+
+    // Jika masih pakai relasi genres()
+    if (property_exists($this, 'selectedGenres') && method_exists($record, 'genres')) {
+        $this->syncRelations($record, 'genres', $this->selectedGenres);
+    }
+
+    $this->resetInput();
+    $this->showNotification(class_basename($this->model) . ' updated successfully.');
+}
+
 
     // Open modal for creating
     public function openCreateModal()
@@ -160,6 +179,8 @@ abstract class MainBase extends Component
         $this->isEdit = false;
         $this->categori = Category::where('is_active', true)->get();
         $this->showModal = true;
+        
+        
     }
 
     // Open modal for editing

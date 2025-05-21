@@ -1,21 +1,33 @@
 <div>
 <div>
 @if ($showNotification)
-        <div
-            class="fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg"
-            x-data="{ show: true }"
-            x-init="setTimeout(() => show = false, 3000)"
-            x-show="show"
-            :class="{
-                'bg-green-100 text-green-700': notifyType === 'success',
-                'bg-red-100 text-red-700': notifyType === 'error',
-                'bg-yellow-100 text-yellow-700': notifyType === 'warning',
-            }"
-        >
-            <strong class="font-bold">{{ Str::upper($notifyType) }}</strong>
-            <span class="block sm:inline">{{ $notifyMessage }}</span>
-        </div>
-    @endif
+    <div
+        id="notification"
+        class="fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg
+            @if($notifyType === 'success') bg-green-100 text-green-700
+            @elseif($notifyType === 'error') bg-red-100 text-red-700
+            @elseif($notifyType === 'warning') bg-yellow-100 text-yellow-700
+            @endif"
+    >
+        <strong class="font-bold">{{ Str::upper($notifyType) }}</strong>
+        <span class="block sm:inline">{{ $notifyMessage }}</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const notification = document.getElementById('notification');
+
+            if (notification) {
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => notification.remove(), 500);
+                }, 3000);
+            }
+        });
+    </script>
+@endif
+
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-semibold">Genres</h2>
         <div class="flex space-x-4">

@@ -1,20 +1,32 @@
 <div>
 @if ($showNotification)
-        <div
-            class="fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg"
-            x-data="{ show: true, notifyType: '{{ $notifyType }}' }"
-            x-init="setTimeout(() => show = false, 3000)"
-            x-show="show"
-            :class="{
-                'bg-green-100 text-green-700': notifyType === 'success',
-                'bg-red-100 text-red-700': notifyType === 'error',
-                'bg-yellow-100 text-yellow-700': notifyType === 'warning',
-            }"
-        >
-            <strong class="font-bold">{{ Str::upper($notifyType) }}</strong>
-            <span class="block sm:inline">{{ $notifyMessage }}</span>
-        </div>
-    @endif
+    <div
+        id="notification"
+        class="fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg
+            @if($notifyType === 'success') bg-green-100 text-green-700
+            @elseif($notifyType === 'error') bg-red-100 text-red-700
+            @elseif($notifyType === 'warning') bg-yellow-100 text-yellow-700
+            @endif"
+    >
+        <strong class="font-bold">{{ Str::upper($notifyType) }}</strong>
+        <span class="block sm:inline">{{ $notifyMessage }}</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const notification = document.getElementById('notification');
+
+            if (notification) {
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => notification.remove(), 500);
+                }, 3000);
+            }
+        });
+    </script>
+@endif
+
     <!-- Header dengan Search dan Button -->
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-semibold">Books</h2>
@@ -58,6 +70,7 @@
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Genre</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
         </thead>
@@ -95,6 +108,13 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {{ $book->category->name ?? '-' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                         @php
+                            $genreIds = $bookGenreMap[$book->id]->genre_ids ?? [];
+                            $genreNames = \App\Models\Genre::whereIn('id', $genreIds)->pluck('name')->toArray();
+                        @endphp
+                        {{ implode(', ', $genreNames) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
                         <button wire:click="openEditModal({{ $book->id }})" class="text-blue-600 hover:text-blue-900 mr-3">
