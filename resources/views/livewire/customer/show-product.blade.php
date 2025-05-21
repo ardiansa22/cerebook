@@ -3,16 +3,20 @@
     <div class="row g-4 mt-3 detail">
         @include('layouts.search')
         <!-- Kolom 1: Galeri Gambar dan Judul Tempat -->
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div class="card shadow-sm border-0 position-relative">
                 <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <img src="/img/kolam.jpg" class="d-block w-100 rounded gallery-image" alt="Tempat" onclick="showModal(0)">
+                           <img src="{{ asset('storage/books/' . $book->image) }}" 
+                            class="d-block w-100 rounded carousel-image" 
+                            alt="Tempat" 
+                            onclick="showModal(0)">
+
                         </div>
-                        <div class="carousel-item">
+                        <!-- <div class="carousel-item">
                             <img src="/img/market.jpg" class="d-block w-100 rounded gallery-image" alt="Tempat" onclick="showModal(1)">
-                        </div>
+                        </div> -->
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon"></span>

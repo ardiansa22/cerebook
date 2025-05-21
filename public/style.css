@@ -210,3 +210,9 @@ body::before {
 .sesi-card h5 {
   color: #2c3e50;
 }
+
+
+.carousel-image {
+    max-height: 300px; /* Atur sesuai kebutuhan */
+    object-fit: cover;
+}
