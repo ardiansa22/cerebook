@@ -6,7 +6,7 @@ return [
         'name' => env('APP_NAME', 'My PWA App'),
         'short_name' => 'CereBook',
         'start_url' => '/',
-        'background_color' => '#ffffff',
+        'background_color' => '#ebebeb',
         'theme_color' => '#000000',
         'display' => 'standalone',
         'orientation'=> 'any',
