@@ -27,7 +27,6 @@
         });
     </script>
 @endif
-
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-semibold">Genres</h2>
         <div class="flex space-x-4">
