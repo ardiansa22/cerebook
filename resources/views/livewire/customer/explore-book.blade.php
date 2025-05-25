@@ -1,7 +1,7 @@
 <div class="container mt-3 detail">
     @include('layouts.search')
 
-    <h5 class="fw-bold mb-3">Kategori: {{ $categori->name }}</h5>
+    <!-- <h5 class="fw-bold mb-3">Kategori: {{ $categori->name }}</h5> -->
 
     @if ($books->isEmpty())
         <p class="text-muted">Belum ada buku di kategori ini.</p>
@@ -10,9 +10,9 @@
     <div class="row row-cols-1 row-cols-md-2 g-4 mt-3">
         @foreach ($books as $book)
         <div class="col">
-            <a href="{{ route('book.show', $book->slug) }}" class="text-decoration-none text-dark">
+            <a href="{{ route('book.show', $book->id) }}" class="text-decoration-none text-dark">
                 <div class="card detail-card position-relative">
-                    <img src="{{ asset('storage/' . $book->cover) }}" class="detail-img" alt="{{ $book->title }}">
+                    <img src="{{ asset('storage/books/' . $book->image) }}" class="detail-img" alt="{{ $book->title }}">
                     <div class="card-body">
                         <h5 class="card-title fw-bold">{{ $book->title }}</h5>
                         <p class="card-text text-muted">

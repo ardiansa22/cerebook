@@ -140,6 +140,44 @@ abstract class MainBase extends Component
         $this->showNotification('Error: ' . $e->getMessage(), 'error');
     }
 }
+public function update($id)
+{
+    try {
+        $record = $this->model::findOrFail($id);
+
+        $this->validate($this->getValidationRules());
+
+        $data = $this->fields;
+
+        // Upload image jika ada
+        if ($this->image) {
+            $data['image'] = $this->uploadImage($this->image, $this->uploadDirectory, $this->oldImage);
+        }
+
+        $record->update($data);
+
+        // Update atau hapus BookGenreCustom
+        if (!empty($this->selectedGenres)) {
+            \App\Models\BookGenreCustom::updateOrCreate(
+                ['book_id' => $record->id],
+                ['genre_ids' => $this->selectedGenres]
+            );
+        } else {
+            \App\Models\BookGenreCustom::where('book_id', $record->id)->delete();
+        }
+
+        // Sinkronisasi relasi genres
+        if (!empty($this->selectedGenres) && method_exists($record, 'genres')) {
+            $this->syncRelations($record, 'genres', $this->selectedGenres);
+        }
+
+        $this->resetInput();
+        $this->showNotification(class_basename($this->model) . ' updated successfully.');
+    } catch (\Throwable $e) {
+        $this->showNotification('Error: ' . $e->getMessage(), 'error');
+    }
+}
+
 
     // Open modal for creating
     public function openCreateModal()

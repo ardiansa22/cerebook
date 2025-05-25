@@ -72,7 +72,7 @@
     <div class="swiper-wrapper">
         @foreach ($books as $book)
         <div class="swiper-slide">
-            <a href="{{ route('book.show', $book->name) }}" class="text-decoration-none text-dark">
+            <a href="{{ route('book.show', $book->id) }}" class="text-decoration-none text-dark">
                 <div class="card p-2 h-100">
                     <img src="{{ asset('storage/books/' . $book->image) }}" class="card-img-top" alt="Gambar {{ $book->title }}">
                     <div class="card-body text-start">
