@@ -107,7 +107,7 @@ abstract class MainBase extends Component
     public function store()
 {
     try {
-        $this->validate($this->getValidationRules());
+        // $this->validate($this->getValidationRules());
 
         $data = $this->fields;
 
@@ -145,7 +145,7 @@ public function update($id)
     try {
         $record = $this->model::findOrFail($id);
 
-        $this->validate($this->getValidationRules());
+        // $this->validate($this->getValidationRules());
 
         $data = $this->fields;
 

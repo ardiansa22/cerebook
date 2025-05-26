@@ -86,4 +86,23 @@
         @endforeach
     </div>
 </div>
+    <div class="swiper-container mb-5">
+    <h6 class="fw-bold">Non-Buku Populer untuk Anda</h6>
+    <div class="swiper-wrapper">
+        @foreach ($products as $product)
+        <div class="swiper-slide">
+            <a href="" class="text-decoration-none text-dark">
+                <div class="card p-2 h-100">
+                    <img src="{{ asset('storage/pruducts/' . $product->image) }}" class="card-img-top" alt="Gambar {{ $product->title }}">
+                    <div class="card-body text-start">
+                        <p class="text-muted mb-1" style="font-size: 11px;">Cereproduct</p>
+                        <h6 class="card-title mb-1">{{ $product->title }}</h6>
+                        <p class="text-muted mb-1">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        @endforeach
+    </div>
+</div>
 </div>

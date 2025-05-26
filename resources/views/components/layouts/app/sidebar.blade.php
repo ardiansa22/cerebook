@@ -19,6 +19,8 @@
             <flux:navlist.item icon="inbox" badge="12" href="/book" wire:navigate>Books</flux:navlist.item>
             <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Categori</flux:navlist.item>
             <flux:navlist.item icon="calendar" href="/genre" wire:navigate>Genre</flux:navlist.item>
+            <flux:navlist.item icon="calendar" href="/product-category" wire:navigate>Category Product</flux:navlist.item>
+            <flux:navlist.item icon="calendar" href="/products" wire:navigate>Product</flux:navlist.item>
         </flux:navlist>
 
         <flux:spacer />

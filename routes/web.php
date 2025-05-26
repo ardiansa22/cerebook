@@ -8,6 +8,8 @@ use App\Livewire\Admin\Books;
 use App\Livewire\Admin\Genres;
 use App\Livewire\Admin\Dashboard; // Tambahkan use statement untuk Dashboard
 use App\Livewire\Admin\Mybook;
+use App\Livewire\Admin\Product;
+use App\Livewire\Admin\ProductCategory;
 use App\Livewire\Customer\ExploreBook;
 use App\Livewire\Customer\Index;
 use App\Livewire\Customer\MyBooks;
@@ -29,6 +31,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('categories', Categories::class)->name('admin.categories');
     Route::get('book', Books::class)->name('admin.book');
     Route::get('genre', Genres::class)->name('admin.genre');
+    Route::get('products', Product::class)->name('admin.product');
+    Route::get('product-category', ProductCategory::class)->name('admin.productcategory');
     Route::get('settings/password', Password::class)->name('settings.password');
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
     Route::get('mybook', Mybook::class)->name('admin.mybook');

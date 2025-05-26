@@ -7,7 +7,7 @@ return [
         'short_name' => 'CereBook',
         'start_url' => '/',
         'background_color' => '#ebebeb',
-        'theme_color' => '#000000',
+        'theme_color' => '#ebebeb',
         'display' => 'standalone',
         'orientation'=> 'any',
         'status_bar'=> 'black',
