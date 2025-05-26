@@ -55,8 +55,15 @@
         </div>
         
         <div class="col-md-12 text-center mt-4">
-            <button class="btn btn-prim rounded-pill shadow-sm" wire:click ='buy'>Buy</button>
+            @auth
+                <button class="btn btn-prim rounded-pill shadow-sm" wire:click='buy'>Beli</button>
+            @endauth
+
+            @guest
+                <a href="{{ route('login') }}" class="btn btn-outline-danger rounded-pill shadow-sm">Masuk untuk Beli</a>
+            @endguest
         </div>
+
         
         <div class="card shadow-sm p-3">
             <h6 class="fw-bold">💬 Diskusi</h6>
