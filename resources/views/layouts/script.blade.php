@@ -61,15 +61,12 @@
 </script>
 {{-- array gambar --}}
 <script>
-    // Array gambar
-    const images = ["/img/kolam.jpg", "/img/kolam2.jpg"];
-
-    // Fungsi untuk menampilkan modal dengan gambar yang diklik
-    function showModal(index) {
-        document.getElementById("modalImage").src = images[index];
+    function showModal(imageUrl) {
+        document.getElementById("modalImage").src = imageUrl;
         new bootstrap.Modal(document.getElementById("imageModal")).show();
     }
 </script>
+
 {{-- swiper tips --}}
 <script>
     var swiper = new Swiper('.swiper-tips', {

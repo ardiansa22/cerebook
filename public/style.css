@@ -216,3 +216,16 @@ body::before {
     max-height: 300px; /* Atur sesuai kebutuhan */
     object-fit: cover;
 }
+@media (min-width: 768px) {
+    .carousel-image {
+        max-width: 600px;
+        max-height: 400px;
+        object-fit: cover;
+    }
+}
+
+ .main-image {
+        max-width: 100%;
+        max-height: 500px;
+        object-fit: cover;
+    }
