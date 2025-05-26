@@ -17,8 +17,6 @@ class ShowProduct extends MainBase
         $this->book = $book;
     }
 
-    
-
 public function buy()
 {
     DB::transaction(function () {

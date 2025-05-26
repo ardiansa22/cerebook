@@ -1,23 +1,50 @@
+@livewireScripts
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     {{-- swiper dashboard --}}
     <script>
-        var swiper = new Swiper('.swiper-container', {
-            slidesPerView: 3, // Menampilkan 3 card di desktop
-            spaceBetween: 10,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
+        document.addEventListener('livewire:init', () => {
+    const swiper = new Swiper('.swiper-container', {
+        slidesPerView: 3,
+        spaceBetween: 10,
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+        breakpoints: {
+            768: { slidesPerView: 3 },
+            0: { slidesPerView: 2 }
+        },
+        // Konfigurasi khusus untuk kompatibilitas Livewire
+        simulateTouch: true,
+        allowTouchMove: true,
+        noSwiping: false,
+        noSwipingClass: 'swiper-no-swiping',
+        touchEventsTarget: 'container',
+        on: {
+            init: function() {
+                // Aktifkan event click setelah swipe selesai
+                this.el.addEventListener('click', (e) => {
+                    if (this.allowClick) {
+                        const link = e.target.closest('a[wire\\:navigate]');
+                        if (link) {
+                            e.preventDefault();
+                            Livewire.navigate(link.href);
+                        }
+                    }
+                }, true);
             },
-            breakpoints: {
-                768: {
-                    slidesPerView: 3, // 3 card untuk layar besar
-                },
-                0: {
-                    slidesPerView: 2, // 2 card untuk layar mobile
-                }
+            touchStart: function() {
+                this.allowClick = false;
+            },
+            touchEnd: function() {
+                setTimeout(() => {
+                    this.allowClick = true;
+                }, 100);
             }
-        });
+        }
+    });
+});
     </script>
 {{-- spin lapak --}}
 <script>

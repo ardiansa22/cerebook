@@ -22,4 +22,5 @@ class Index extends Component
         ])->layout('layouts.app');
     }
     
+    
 }

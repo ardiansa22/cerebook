@@ -1,8 +1,8 @@
 <div class="container mt-3">
     @include('layouts.search')
-    <div class="row mb-3">
+    <div class="row">
         <!-- Kolom Kiri: Gambar -->
-        <div class="col-md-5 text-center">
+        <div class="col-md-5 text-center mt-3">
             <img 
                 src="{{ asset('storage/books/' . $book->image) }}" 
                 class="img-fluid rounded shadow-sm main-image" 
@@ -61,11 +61,13 @@
                 </select>
             </div>
 
-            <div class="my-4">
-                <button class="btn btn-prim rounded-pill shadow-sm px-4" wire:click="buy">
-                    Beli Sekarang
-                </button>
-            </div>
+           <button class="btn btn-prim rounded-pill shadow-sm px-4 py-2"
+                    wire:click="buy"
+                    wire:loading.attr="disabled">
+                <span wire:loading.remove>Beli Sekarang</span>
+                <span wire:loading>Memproses...</span>
+            </button>
+
            @php
                 $words = explode(' ', $book->description);
                 $shortDescription = implode(' ', array_slice($words, 0, 30)); // 30 kata agar mirip tampilan

@@ -229,3 +229,17 @@ body::before {
         max-height: 500px;
         object-fit: cover;
     }
+.swiper-container {
+    overflow: hidden;
+    padding-bottom: 20px;
+}
+
+.swiper-slide {
+    height: auto;
+}
+
+.swiper-link {
+    display: block;
+    height: 100%;
+    pointer-events: auto;
+}

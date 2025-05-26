@@ -1,7 +1,7 @@
 
 <div class="d-flex justify-content-between align-items-center mt-3">
     <button class="btn btn-light"><i class="fa-solid fa-location-crosshairs"></i></button>
-    <input wire:model='search' type="text" class="form-control w-75" placeholder="Cari Buku Favoritmu">
+    <input  type="text" class="form-control w-75" placeholder="Cari Buku Favoritmu">
 
     <div class="btn-group">
         <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
