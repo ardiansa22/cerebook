@@ -67,13 +67,12 @@
         </div>
     </div>
     <!-- Swiper Carousel -->
-    <div class="swiper-container mb-3" wire:ignore>
+    <div class="swiper-container mb-3">
     <h6 class="fw-bold">Buku Populer untuk Anda</h6>
     <div class="swiper-wrapper">
         @foreach ($books as $book)
         <div class="swiper-slide">
-            <a wire:navigate href="{{ route('book.show', $book->id) }}" 
-               class="text-decoration-none text-dark swiper-link">
+            <a href="{{ route('book.show', $book->id) }}" class="text-decoration-none text-dark">
                 <div class="card p-2 h-100">
                     <img src="{{ asset('storage/books/' . $book->image) }}" class="card-img-top" alt="Gambar {{ $book->title }}">
                     <div class="card-body text-start">

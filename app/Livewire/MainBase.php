@@ -298,8 +298,5 @@ public function update($id)
             $this->showNotification('Field is_active tidak ditemukan.', 'error');
         }
     }
-    public function navigateToBook($bookId)
-{
-    return $this->navigate(route('book.show', $bookId));
-}
+    
 }
