@@ -24,6 +24,8 @@ abstract class MainBase extends Component
     public $isEdit = false;
     public $editingId = null;
     public $showModal = false;
+    public $showBuyModal = false;
+
     public $modalTitle = '';
 
     public $selectedIds = [];

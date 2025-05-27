@@ -7,9 +7,8 @@
                 src="{{ asset('storage/books/' . $book->image) }}" 
                 class="img-fluid rounded shadow-sm main-image" 
                 alt="{{ $book->title }}"
-                style="max-height: 500px; object-fit: cover;"
+                style="max-height: 500px; object-fit: cover; cursor: pointer;"
                  onclick="showModal('{{ asset('storage/books/' . $book->image) }}')"
-                                style="cursor: pointer;"
             >
             <div class="mt-2">
                 <!-- Thumbnail (bisa ditambahkan banyak nanti) -->
@@ -60,13 +59,61 @@
                     <option>CereBrum Banjaran</option>
                 </select>
             </div>
+          @auth
+                @if($book->stock > 0)
+                    <button class="btn btn-prim rounded-pill shadow-sm px-4 py-2"
+                            wire:click="OpenBuyModal"
+                            wire:loading.attr="disabled">
+                        <span wire:loading.remove>Beli Sekarang</span>
+                        <span wire:loading>Memproses...</span>
+                    </button>
+                @else
+                    <button class="btn btn-secondary rounded-pill shadow-sm px-4 py-2" disabled>
+                        Stok Habis
+                    </button>
+                @endif
+            @endauth
 
-           <button class="btn btn-prim rounded-pill shadow-sm px-4 py-2"
-                    wire:click="buy"
-                    wire:loading.attr="disabled">
-                <span wire:loading.remove>Beli Sekarang</span>
-                <span wire:loading>Memproses...</span>
-            </button>
+            @guest
+                <a href="{{ route('login') }}" class="btn btn-prim rounded-pill shadow-sm px-4 py-2">
+                    Masuk untuk Beli
+                </a>
+            @endguest
+
+            @if ($showBuyModal)
+            <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index:1050;">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Konfirmasi Pembelian</h5>
+                            <button type="button" class="btn-close" wire:click="$set('showBuyModal', false)"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <img src="{{ asset('storage/books/' . $book->image) }}" 
+                                class="img-fluid rounded mb-3" 
+                                style="max-height: 200px; object-fit: cover;">
+                            
+                            <h5 class="fw-bold">Rp{{ number_format($book->price - ($book->price * 0.25), 0, ',', '.') }}</h5>
+                            
+                            <div class="input-group justify-content-center my-3" style="max-width: 150px; margin: 0 auto;">
+                                <button class="btn btn-outline-secondary" wire:click="decrement">-</button>
+                                <input type="text" class="form-control text-center" wire:model="quantity" readonly>
+                                <button class="btn btn-outline-secondary" wire:click="increment">+</button>
+                            </div>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button class="btn btn-secondary" wire:click="$set('showBuyModal', false)">Batal</button>
+                            <button class="btn btn-primary" wire:click="confirmBuy" wire:loading.attr="disabled">
+                                <span wire:loading.remove>Konfirmasi</span>
+                                <span wire:loading>Memproses...</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+
 
            @php
                 $words = explode(' ', $book->description);

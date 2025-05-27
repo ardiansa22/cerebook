@@ -11,39 +11,66 @@ use Illuminate\Support\Facades\DB;
 
 class ShowProduct extends MainBase
 {   public $book;
+    public $quantity = 1;
+    public $showBuyModal = false;
+
 
     public function mount(Book $book)
     {
         $this->book = $book;
     }
+    public function increment()
+    {
+        $this->quantity++;
+    }
 
-public function buy()
-{
-    DB::transaction(function () {
-        $book = Book::where('id', $this->book->id)->lockForUpdate()->first();
-
-        if ($book->stock <= 0) {
-            session()->flash('error', 'Stok buku habis!');
-            return;
+    public function decrement()
+    {
+        if ($this->quantity > 1) {
+            $this->quantity--;
         }
+    }
 
-        $transaction = Transaction::create([
-            'user_id' => auth()->id(),
-            'book_id' => $book->id,
-            'status' => 1,
-        ]);
+    public function OpenBuyModal()
+    {
+        $this->showBuyModal = true;
+    }
 
-        Userbook::create([
-            'transaction_id' => $transaction->id,
-            'book_id' => $book->id,
-        ]);
+    public function confirmBuy()
+    {
+        $this->buy(); // panggil method buy() setelah user klik Konfirmasi
+    }
 
-        $book->decrement('stock');
-    });
+    public function buy()
+    {
+        DB::transaction(function () {
+            $book = Book::where('id', $this->book->id)->lockForUpdate()->first();
 
-    session()->flash('success', 'Book purchased successfully!');
-    return redirect()->route('my-books');
-}
+            if ($book->stock < $this->quantity) {
+                session()->flash('error', 'Stok tidak mencukupi!');
+                return;
+            }
+
+            $transaction = Transaction::create([
+                'user_id' => auth()->id(),
+                'book_id' => $book->id,
+                'status' => 1,
+            ]);
+
+            for ($i = 0; $i < $this->quantity; $i++) {
+                Userbook::create([
+                    'transaction_id' => $transaction->id,
+                    'book_id' => $book->id,
+                ]);
+            }
+
+            $book->decrement('stock', $this->quantity);
+        });
+
+        session()->flash('success', 'Book purchased successfully!');
+        return redirect()->route('my-books');
+    }
+
 
     public function render()
     {

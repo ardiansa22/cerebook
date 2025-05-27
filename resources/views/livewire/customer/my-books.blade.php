@@ -1,6 +1,15 @@
 <div class="container mt-3 ">
     @include('layouts.search')
-    
+    @if (session()->has('error'))
+    <div class="alert alert-danger mt-3">
+        {{ session('error') }}
+    </div>
+@endif
+@if (session()->has('success'))
+    <div class="alert alert-success mt-3">
+        {{ session('success') }}
+    </div>
+@endif
     @foreach ($books as $userbook)
     <a href="" class="text-decoration-none text-dark">
         <div class="card sesi-card shadow-sm p-3 mt-3">
