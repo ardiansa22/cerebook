@@ -20,7 +20,7 @@
                          alt="Tempat Mancing" class="rounded" width="80" height="80">
                     <div class="ms-3">
                         <h6 class="mb-1">{{$userbook->book->title}}</h6>
-                        <p class="text-muted mb-0">{{$userbook->book->price}}</p>
+                        <p class="text-muted mb-0">Rp{{ number_format($userbook->book->price, 0, ',', '.') }}</p>
                     </div>
                 </div>
                 <!-- Status Sesi -->

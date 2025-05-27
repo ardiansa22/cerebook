@@ -18,6 +18,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Kategori -->
         <div class="d-flex justify-content-around mt-3 flex-wrap">
         @foreach ($categories->take(4) as $category)

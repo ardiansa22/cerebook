@@ -14,7 +14,8 @@ class MyBooks extends MainBase
                     ->orderBy('created_at', 'desc')  // urut descending berdasarkan created_at
                     ->get();
 
-        return view('livewire.customer.my-books', compact('books'))->layout('layouts.app');
+        return view('livewire.customer.my-books', compact('books')
+        )->layout('layouts.app');
     }
 
 }
