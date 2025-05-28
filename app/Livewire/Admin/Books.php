@@ -23,6 +23,13 @@ class Books extends MainBase
     public $genres;
     public $categories;
 
+    // filer
+    public $selectedfilterGenres = [];
+    public $selectedfilterCategories = [];
+
+    public $filtercategories = [];
+    public $filtergenres = [];
+
     public function mount()
     {
          $this->model = Book::class;
@@ -39,14 +46,28 @@ class Books extends MainBase
     ];
         $this->categories = Category::where('is_active', true)->get();
         $this->genres = Genre::all(); // Load semua genre
+
+        $this->filtercategories = Category::all();
+        $this->filtergenres = Genre::all();
     }
 
     public function render()
 {
-    $books = $this->getQuery($this->model)
-                ->with(['category'])
-                ->paginate($this->perPage);
+    $query = Book::with(['category', 'genres']);
 
+    // if (!empty($this->selectedCategories)) {
+    //     $query->whereIn('category_id', $this->selectedCategories);
+    // }
+
+    // if (!empty($this->selectedGenres)) {
+    //     $query->whereIn('genre_id', $this->selectedGenres);
+    // }
+
+    // if ($this->search) {
+    //     $query->where('title', 'like', '%' . $this->search . '%');
+    // }
+
+    $books = $query->paginate($this->perPage);
     // Ambil mapping genre_ids per book_id
     $bookGenreMap = BookGenreCustom::all()->keyBy('book_id');
 

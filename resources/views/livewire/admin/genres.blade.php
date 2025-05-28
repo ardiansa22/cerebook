@@ -30,19 +30,29 @@
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-semibold">Genres</h2>
         <div class="flex space-x-4">
-           <flux:button variant="primary"  wire:click="openCreateModal">Create New</flux:button>
-            <flux:button variant="danger" wire:click="deleteSelected">Delete Selected ({{ count($selectedIds) }})</flux:button>
+            <flux:button variant=" " size="xs" wire:click="openCreateModal">Create New</flux:button>
+            <flux:button variant="danger" size="xs" wire:click="deleteSelected">Delete Selected ({{ count($selectedIds) }})</flux:button>
         </div>
     </div>
 
-    <div class="mb-4 w-64">
-        <input
-            type="text"
-            wire:model.live="search"
-            placeholder="Search Genres..."
-            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-        />
+  <div class="mb-4">
+        <div class="flex items-center mb-2">
+            <div class="mr-4">
+            <flux:input size="sm" placeholder="Search ..." wire:model.live="search" />
+            </div>
+        </div>
+        <label class="text-sm text-gray-700">
+            Show
+            <select wire:model.live="perPage" class="ml-2 border rounded p-1">
+                <option value="5">5</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+            entries
+            </label>
     </div>
+
     <div class="overflow-x-auto bg-white rounded-lg shadow">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -100,13 +110,8 @@
 
                         <div class="space-y-4">
                             <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700">genre Name</label>
-                                <input
-                                    type="text"
-                                    wire:model="fields.name"
-                                    id="name"
-                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-700 bg-white" <!-- Tambahkan bg-white dan text-gray-700 -->
-                                
+                                    <flux:input type="email" label="Genre" wire:model="fields.name"
+                                    id="name"/>
                             </div>
                         </div>
                     </div>

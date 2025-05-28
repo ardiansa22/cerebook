@@ -12,13 +12,11 @@
         <flux:brand href="#" logo="https://matapangandaran.my.id/images/logo.png" name="CereBook." class="px-2 dark:hidden" />
         <flux:brand href="#" logo="https://matapangandaran.my.id/images/logo.png" name="CereBook." class="px-2 hidden dark:flex" />
 
-        <flux:input as="button" variant="filled" placeholder="Search..." icon="magnifying-glass" />
-
         <flux:navlist variant="outline">
             <flux:navlist.item icon="home" href="/dashboard" wire:navigate>Home</flux:navlist.item>
 
              <flux:navlist.group expandable heading="Book" class="hidden lg:grid">
-                <flux:navlist.item icon="inbox" badge="12" href="/book" wire:navigate>Books</flux:navlist.item>
+                <flux:navlist.item icon="inbox" href="/book" wire:navigate>Books</flux:navlist.item>
                 <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Categori</flux:navlist.item>
                 <flux:navlist.item icon="calendar" href="/genre" wire:navigate>Genre</flux:navlist.item>
             </flux:navlist.group>
