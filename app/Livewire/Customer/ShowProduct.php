@@ -4,44 +4,69 @@ namespace App\Livewire\Customer;
 
 use App\Livewire\MainBase;
 use App\Models\Book;
-use App\Models\Transaction;
-use App\Models\Userbook;
-use Livewire\Component;
+use App\Models\Rental;
+use App\Models\RentalItem;
+use App\Models\Payment;
+use App\Models\Fines;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class ShowProduct extends MainBase
-{   public $book;
+{
+    public $book;
+    public $rental_date;
+    public $return_date;
     public $quantity = 1;
-    public $showBuyModal = false;
-
+    public $showRentalModal = false;
+    public $paymentMethod = 'transfer';
+    public $totalPrice = 0;
 
     public function mount(Book $book)
     {
         $this->book = $book;
+        $this->rental_date = Carbon::today()->format('Y-m-d');
+        $this->return_date = Carbon::today()->addDays(7)->format('Y-m-d');
+        $this->calculateTotal();
     }
+
     public function increment()
     {
-        $this->quantity++;
+        if ($this->quantity < $this->book->stock) {
+            $this->quantity++;
+            $this->calculateTotal();
+        }
     }
 
     public function decrement()
     {
         if ($this->quantity > 1) {
             $this->quantity--;
+            $this->calculateTotal();
         }
     }
 
-    public function OpenBuyModal()
+    public function calculateTotal()
     {
-        $this->showBuyModal = true;
+        $this->totalPrice = $this->book->price * $this->quantity;
     }
 
-    public function confirmBuy()
+    public function OpenRentalModal()
     {
-        $this->buy(); // panggil method buy() setelah user klik Konfirmasi
+        $this->validate([
+            'quantity' => 'required|integer|min:1|max:' . $this->book->stock,
+            'rental_date' => 'required|date|after_or_equal:today',
+            'return_date' => 'required|date|after:rental_date',
+        ]);
+
+        $this->showRentalModal = true;
     }
 
-    public function buy()
+    public function confirmRental()
+    {
+        $this->rental();
+    }
+
+    public function rental()
     {
         DB::transaction(function () {
             $book = Book::where('id', $this->book->id)->lockForUpdate()->first();
@@ -51,26 +76,40 @@ class ShowProduct extends MainBase
                 return;
             }
 
-            $transaction = Transaction::create([
+            // Create rental
+            $rental = Rental::create([
                 'user_id' => auth()->id(),
                 'book_id' => $book->id,
-                'status' => 1,
+                'rental_date' => $this->rental_date,
+                'return_date' => $this->return_date,
+                'status' => 'rented',
+                'total_price' => $this->totalPrice,
             ]);
 
-            for ($i = 0; $i < $this->quantity; $i++) {
-                Userbook::create([
-                    'transaction_id' => $transaction->id,
-                    'book_id' => $book->id,
-                ]);
-            }
+            // Create rental item
+            RentalItem::create([
+                'rental_id' => $rental->id,
+                'book_id' => $book->id,
+                'quantity' => $this->quantity,
+                'sub_total' => $this->totalPrice,
+            ]);
 
+            // Create payment
+            Payment::create([
+                'rental_id' => $rental->id,
+                'payment_date' => now(),
+                'amount' => $this->totalPrice,
+                'method' => $this->paymentMethod,
+                'status' => 'paid',
+            ]);
+
+            // Update book stock
             $book->decrement('stock', $this->quantity);
         });
 
-        session()->flash('success', 'Book purchased successfully!');
+        session()->flash('success', 'Buku berhasil disewa!');
         return redirect()->route('my-books');
     }
-
 
     public function render()
     {

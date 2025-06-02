@@ -21,5 +21,12 @@ class Book extends Model
     {
         return $this->belongsToMany (Genre::class);
     }
+    public function rentalItems() {
+    return $this->hasMany(RentalItem::class);
+    }
+
+    public function reviews() {
+        return $this->hasMany(BookReview::class);
+    }
 
 }

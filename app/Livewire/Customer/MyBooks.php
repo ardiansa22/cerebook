@@ -9,8 +9,8 @@ class MyBooks extends MainBase
 {
    public function render()
     {    
-        $books = auth()->user()->userbooks()
-                    ->with('book')
+        $books = auth()->user()->rentals()
+                    ->with('items')
                     ->orderBy('created_at', 'desc')  // urut descending berdasarkan created_at
                     ->get();
 

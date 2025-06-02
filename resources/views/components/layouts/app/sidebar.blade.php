@@ -15,14 +15,29 @@
         <flux:navlist variant="outline">
             <flux:navlist.item icon="home" href="/dashboard" wire:navigate>Home</flux:navlist.item>
 
-             <flux:navlist.group expandable heading="Book" class="hidden lg:grid">
-                <flux:navlist.item icon="inbox" href="/book" wire:navigate>Books</flux:navlist.item>
+             <flux:navlist.group expandable heading="Book Management" class="hidden lg:grid">
+                <flux:navlist.item icon="inbox" href="/book" wire:navigate>Book</flux:navlist.item>
                 <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Categori</flux:navlist.item>
                 <flux:navlist.item icon="calendar" href="/genre" wire:navigate>Genre</flux:navlist.item>
+                <flux:navlist.item icon="calendar" href="#" wire:navigate>Books Review</flux:navlist.item>
             </flux:navlist.group>
-             <flux:navlist.group expandable heading="Non-Book" class="hidden lg:grid">
-               <flux:navlist.item icon="calendar" href="/product-category" wire:navigate>Category Product</flux:navlist.item>
-                <flux:navlist.item icon="calendar" href="/products" wire:navigate>Product</flux:navlist.item>
+             <flux:navlist.group expandable heading="Borrowing" class="hidden lg:grid">
+                <flux:navlist.item icon="inbox" href="/book" wire:navigate>Data Peminjaman</flux:navlist.item>
+                <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Peminjaman Buku</flux:navlist.item>
+                <flux:navlist.item icon="calendar" href="/genre" wire:navigate>Riwayat Peminjaman</flux:navlist.item>
+            </flux:navlist.group>
+             <flux:navlist.group expandable heading="Pembayaran & Denda" class="hidden lg:grid">
+                <flux:navlist.item icon="inbox" href="/book" wire:navigate>Pembayaran</flux:navlist.item>
+                <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Denda Terlambat</flux:navlist.item>
+            </flux:navlist.group>
+             <flux:navlist.group expandable heading="Laporan" class="hidden lg:grid">
+                <flux:navlist.item icon="inbox" href="/book" wire:navigate>Laporan Peminjaman</flux:navlist.item>
+                <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Laporan Denda</flux:navlist.item>
+                <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Laporan Buku paling populer</flux:navlist.item>
+            </flux:navlist.group>
+             <flux:navlist.group expandable heading="Pengguna" class="hidden lg:grid">
+                <flux:navlist.item icon="user" href="/book" wire:navigate>Data Pengguna</flux:navlist.item>
+                <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Kelola Role</flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 

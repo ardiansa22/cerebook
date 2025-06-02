@@ -240,6 +240,12 @@ public function update($id)
             $this->selectAll = false;
         }
     }
+    public function confirmDeleteSelected()
+    {
+        // Emit event ke browser untuk menampilkan konfirmasi JS
+        $this->dispatch('confirm-delete');
+    }
+
 
     // Select all
     public function toggleSelectAll()
@@ -272,12 +278,20 @@ public function update($id)
     }
 
     // Notification
+    // public function showNotification($message, $type = 'success')
+    // {
+    //     $this->notifyMessage = $message;
+    //     $this->notifyType = $type;
+    //     $this->showNotification = true;
+    // }
     public function showNotification($message, $type = 'success')
     {
-        $this->notifyMessage = $message;
-        $this->notifyType = $type;
-        $this->showNotification = true;
+        $this->dispatch('swal:notification', [
+            'type' => $type,
+            'message' => $message,
+        ]);
     }
+
 
     public function resetNotification()
     {
