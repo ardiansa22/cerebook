@@ -7,6 +7,7 @@
         <h2 class="text-2xl font-semibold">Categories</h2>
         <div class="flex space-x-4">
             @include('layouts.component.createdel ')
+            <flux:button variant="danger" size="xs" wire:click="toggleStatus">Aktif/nonaktif ({{ count($selectedIds) }})</flux:button>
         </div>
     </div>
 
@@ -23,7 +24,6 @@
             entries
             </label>
     </div>
-
     <div class="overflow-x-auto bg-white rounded-lg shadow">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -34,7 +34,6 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category Name</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -56,12 +55,6 @@
                             </flux:badge>
 
                         </td>
-                        <td class="px-6 py-4 text-sm font-medium space-x-2">
-                            <flux:field variant="inline">
-                                <flux:switch wire:click="toggleStatus({{ $category->id }})" />
-                                <flux:error name="notifications" />
-                            </flux:field>
-                        </td>
                     </tr>
                 @empty
                     <tr>
@@ -71,11 +64,9 @@
             </tbody>
         </table>
     </div>
-
     <div class="mt-4">
         {{ $categories->links() }}
     </div>
-
     @if($showModal)
         <div class="fixed inset-0 z-50 overflow-y-auto">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">

@@ -6,4 +6,4 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\BookController;
 
 //products
-Route::apiResource('/book', BookController::class);
+// Route::apiResource('/book', BookController::class);

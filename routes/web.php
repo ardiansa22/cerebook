@@ -7,9 +7,11 @@ use App\Livewire\Admin\Categories;
 use App\Livewire\Admin\Books;
 use App\Livewire\Admin\Genres;
 use App\Livewire\Admin\Dashboard; // Tambahkan use statement untuk Dashboard
+use App\Livewire\Admin\Loan;
 use App\Livewire\Admin\Mybook;
 use App\Livewire\Admin\Product;
 use App\Livewire\Admin\ProductCategory;
+use App\Livewire\Admin\Returns;
 use App\Livewire\Customer\ExploreBook;
 use App\Livewire\Customer\Index;
 use App\Livewire\Customer\MyBooks;
@@ -36,6 +38,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/password', Password::class)->name('settings.password');
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
     Route::get('mybook', Mybook::class)->name('admin.mybook');
+    Route::get('loan', Loan::class)->name('admin.loan');
+    Route::get('return', Returns::class)->name('admin.return');
 });
 
 require __DIR__.'/auth.php';

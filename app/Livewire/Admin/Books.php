@@ -50,32 +50,45 @@ class Books extends MainBase
         $this->filtercategories = Category::all();
         $this->filtergenres = Genre::all();
     }
+    // Di dalam class Books
+    public function resetFilters()
+    {
+        $this->reset(['selectedfilterGenres', 'selectedfilterCategories', 'search']);
+        $this->resetPage(); // Reset pagination ke halaman 1
+    }
 
     public function render()
 {
     $query = Book::with(['category', 'genres']);
 
-    // if (!empty($this->selectedCategories)) {
-    //     $query->whereIn('category_id', $this->selectedCategories);
-    // }
+    // Filter by categories
+    if (!empty($this->selectedfilterCategories)) {
+        $query->whereIn('category_id', $this->selectedfilterCategories);
+    }
 
-    // if (!empty($this->selectedGenres)) {
-    //     $query->whereIn('genre_id', $this->selectedGenres);
-    // }
+    // Filter by genres
+    if (!empty($this->selectedfilterGenres)) {
+        $query->whereHas('genres', function($q) {
+            $q->whereIn('genres.id', $this->selectedfilterGenres);
+        });
+    }
 
-    // if ($this->search) {
-    //     $query->where('title', 'like', '%' . $this->search . '%');
-    // }
+    // Search
+    if ($this->search) {
+        $query->where(function($q) {
+            foreach ($this->searchableFields as $field) {
+                $q->orWhere($field, 'like', '%' . $this->search . '%');
+            }
+        });
+    }
 
     $books = $query->paginate($this->perPage);
-    // Ambil mapping genre_ids per book_id
-    $bookGenreMap = BookGenreCustom::all()->keyBy('book_id');
-
+    
     return view('livewire.admin.book', [
         'books' => $books,
         'categories' => $this->categories,
         'genres' => $this->genres,
-        'bookGenreMap' => $bookGenreMap
+        'bookGenreMap' => BookGenreCustom::all()->keyBy('book_id')
     ]);
 }
 }

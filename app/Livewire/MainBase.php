@@ -301,18 +301,32 @@ public function update($id)
     }
 
     // Toggle active status
-    public function toggleStatus($id)
-    {
-        $record = $this->model::findOrFail($id);
+    public function toggleStatus($id = null)
+{
+    $ids = $id ? [$id] : $this->selectedIds;
 
+    if (empty($ids)) {
+        $this->showNotification('Tidak ada item yang dipilih.', 'error');
+        return;
+    }
+
+    $records = $this->model::whereIn('id', $ids)->get();
+
+    foreach ($records as $record) {
         if (isset($record->is_active)) {
             $record->is_active = !$record->is_active;
             $record->save();
-
-            $this->showNotification(class_basename($this->model) . ' status updated.');
-        } else {
-            $this->showNotification('Field is_active tidak ditemukan.', 'error');
         }
     }
+
+    $this->showNotification(count($ids) . ' item status berhasil diperbarui.');
+
+    // Reset pilihan setelah toggle massal
+    if (!$id) {
+        $this->selectedIds = [];
+        $this->selectAll = false;
+    }
+}
+
     
 }

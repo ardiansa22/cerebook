@@ -21,6 +21,35 @@
             entries
             </label>
     </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Categories</label>
+        <select wire:model.live="selectedfilterCategories" multiple 
+                class="w-full border rounded-md p-2 text-sm">
+            @foreach($filtercategories as $category)
+                <option value="{{ $category->id }}">{{ $category->name }}</option>
+            @endforeach
+        </select>
+    </div>
+    
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Genres</label>
+        <select wire:model.live="selectedfilterGenres" multiple 
+                class=" w-full border rounded-md p-2 text-sm">
+            @foreach($filtergenres as $genre)
+                <option value="{{ $genre->id }}">{{ $genre->name }}</option>
+            @endforeach
+        </select>
+    </div>
+</div>
+
+<!-- Tambahkan tombol reset di sini -->
+<div class="mb-6 flex justify-end">
+    <button wire:click="resetFilters" 
+            class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md text-sm font-medium text-gray-700">
+        <i class="fas fa-filter-circle-xmark mr-1"></i> Reset Filters
+    </button>
+</div>
 
     <!-- Tabel Data -->
     <div class="overflow-x-auto bg-white rounded-lg shadow">

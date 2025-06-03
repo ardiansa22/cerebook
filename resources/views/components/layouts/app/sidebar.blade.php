@@ -22,8 +22,8 @@
                 <flux:navlist.item icon="calendar" href="#" wire:navigate>Books Review</flux:navlist.item>
             </flux:navlist.group>
              <flux:navlist.group expandable heading="Borrowing" class="hidden lg:grid">
-                <flux:navlist.item icon="inbox" href="/book" wire:navigate>Data Peminjaman</flux:navlist.item>
-                <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Peminjaman Buku</flux:navlist.item>
+                <flux:navlist.item icon="inbox" href="/loan" wire:navigate>Data Peminjaman</flux:navlist.item>
+                <flux:navlist.item icon="document-text" href="/return" wire:navigate>Pengembalian Buku</flux:navlist.item>
                 <flux:navlist.item icon="calendar" href="/genre" wire:navigate>Riwayat Peminjaman</flux:navlist.item>
             </flux:navlist.group>
              <flux:navlist.group expandable heading="Pembayaran & Denda" class="hidden lg:grid">
