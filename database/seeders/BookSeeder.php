@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Book;
 use App\Models\BookGenreCustom;
+use App\Models\Category;
+use App\Models\Genre;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -15,6 +17,12 @@ class BookSeeder extends Seeder
 
         for ($i = 0; $i < 10; $i++) {
             // Simpan buku
+            $category = Category::create([
+                'name' => $faker->name,
+            ]);
+            $genre = Genre::create([
+                'name' => $faker->name,
+            ]);
             $book = Book::create([
                 'name' => $faker->name,
                 'title' => $faker->sentence,

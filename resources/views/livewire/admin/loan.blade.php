@@ -4,7 +4,7 @@
 @include('layouts.component.confirmdelete ')
 
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-semibold">Genres</h2>
+        <h2 class="text-2xl font-semibold">Data Peminjaman Buku</h2>
         <div class="flex space-x-4">
             @include('layouts.component.createdel ')
         </div>
@@ -54,14 +54,13 @@
                            TSAJA {{ $loans->firstItem() + $index }}201EJ
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {{ $loan->user->id}}
+                            {{ $loan->user->name}}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                <ul class="list-disc ml-4">
+                            
                                     @foreach ($loan->items as $detail)
-                                        <li>{{ $detail->book->title }}</li>
+                                        {{ $detail->book->name }}
                                     @endforeach
-                                </ul>   
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             {{ $loan->rental_date->format('d-m-Y') }}
@@ -92,25 +91,26 @@
                             @endswitch
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {{ $loan->items->count() }}
+                            @foreach ($loan->items as $detail)
+                                {{ $detail->quantity }}
+                            @endforeach
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             @if ($loan->fine)
-                                Rp {{ number_format($loan->fine->amount, 0, ',', '.') }}
+                                Rp {{ number_format($loan->fine->fine_amount, 0, ',', '.') }}
                             @else
-                                -
+                                Rp 0
                             @endif
                         </td>
 
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                            wire:click="openEditModal({{ $loan->id }})"
-                            class="text-blue-600 hover:text-blue-900 mr-3"
-                        >
-                            <svg class="h-5 w-5 inline-block mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path d="M13.586 3.586a2 2 0 012.828 2.828l-7.93 7.931a2 2 0 01-2.828 0l-2.828-2.828a2 2 0 010-2.828l7.93-7.931a2 2 0 012.828 0zM1.414 10.586l7.93-7.93a2 2 0 012.828 2.828l-7.93 7.931a2 2 0 01-2.828 0z" />
-                            </svg>
-                        </button>
+                        @if($loan->status === 'rented')
+                            <button wire:click="openReturnModal({{ $loan->id }})" class="bg-green-600 hover:bg-green-700 px-2 py-1 text-white rounded">
+                                Kembalikan
+                            </button>
+                        @else
+                            <span class="text-gray-500">Selesai</span>
+                        @endif
                         </td>
                     </tr>
                 @endforeach
@@ -121,38 +121,58 @@
         {{ $loans->links() }}
     </div>
     @if($showModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-                </div>
+    <div class="fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
 
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-                            {{ $modalTitle }}
-                        </h3>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                        {{ $modalTitle }}
+                    </h3>
 
-                        <div class="space-y-4">
-                            <div>
-                                    <flux:input type="email" label="Genre" wire:model="fields.name"
-                                    id="name"/>
-                            </div>
+                    <div class="space-y-4">
+                        <div>
+                            <flux:input type="text" label="Nama Peminjam" :value="$selectedRental?->user?->name" disabled />
+                        </div>
+                        <div>
+                            <flux:input type="text" label="Judul Buku" :value="$selectedRental?->book?->title" disabled />
+                        </div>
+                        <div>
+                            <flux:input type="text" label="Total Price" :value="$selectedRental?->total_price" disabled />
+                        </div>
+                        <div>
+                            <flux:input type="date" label="Tanggal Pengembalian Aktual" wire:model="actualReturnDate" />
+                            @error('actualReturnDate') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Upload Bukti Pengembalian (Opsional)</label>
+                            <input type="file" wire:model="proofImage" class="block w-full border border-gray-300 rounded p-1">
+                            @if ($proofImage)
+                                <div class="mt-2">
+                                    Preview: <img src="{{ $proofImage->temporaryUrl() }}" alt="Bukti" class="w-32 h-auto mt-1 rounded">
+                                </div>
+                            @endif
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                       <div class="flex space-x-4 sm:space-x-reverse">
-                            <flux:button wire:click="$set('showModal', false)" variant="filled">
-                                Cancel
-                            </flux:button>
-                            <flux:button wire:click.prevent="save" variant="primary">
-                                Save
-                            </flux:button>
-                        </div>
+                </div>
+
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <div class="flex space-x-4 sm:space-x-reverse">
+                        <flux:button wire:click="$set('showModal', false)" variant="filled">
+                            Cancel
+                        </flux:button>
+                        <flux:button wire:click.prevent="processReturn" variant="primary">
+                            Simpan
+                        </flux:button>
                     </div>
                 </div>
             </div>
         </div>
-    @endif
+    </div>
+@endif
+
 </div>
 </div>

@@ -12,22 +12,24 @@ use App\Livewire\Admin\Mybook;
 use App\Livewire\Admin\Product;
 use App\Livewire\Admin\ProductCategory;
 use App\Livewire\Admin\Returns;
+use App\Livewire\Customer\CartComponent;
 use App\Livewire\Customer\ExploreBook;
 use App\Livewire\Customer\Index;
 use App\Livewire\Customer\MyBooks;
 use App\Livewire\Customer\ShowProduct;
+use App\Models\Cart;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/',Index::class)->name('home');
 Route::get('/book/{book}', ShowProduct::class)->name('book.show');
 Route::get('/my-books', MyBooks::class)->name('my-books');
 Route::get('/Explore/{categori:name}', ExploreBook::class)->name('categori.book');
+Route::get('/keranjang', CartComponent::class)->name('keranjang');
 
-Route::get('dashboard', Dashboard::class) // Ubah Route::view menjadi Route::get dan panggil class Dashboard
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'role:admin', 'verified'])->group(function () {
+    Route::get('dashboard', Dashboard::class)->name('dashboard');
+
     Route::redirect('settings', 'settings/profile');
     Route::get('settings/profile', Profile::class)->name('settings.profile');
     Route::get('categories', Categories::class)->name('admin.categories');

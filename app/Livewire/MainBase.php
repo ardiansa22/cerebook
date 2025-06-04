@@ -60,6 +60,11 @@ abstract class MainBase extends Component
                 });
             });
     }
+    public function showModal()
+    {
+        $this->showModal = true;
+    }
+
 
     // Generic image upload function
     public function uploadImage($imageFile, $directory, $oldFile = null)
@@ -197,7 +202,7 @@ public function update($id)
     public function openEditModal($id)
     {
         $record = $this->model::findOrFail($id);
-
+        // dd($record);
         $this->fields = $record->toArray();
         $this->editingId = $id;
         $this->isEdit = true;

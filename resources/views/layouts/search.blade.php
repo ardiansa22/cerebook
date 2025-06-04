@@ -19,6 +19,9 @@
                     <a class="dropdown-item" href="#">Pengaturan</a>
                 </li>
                 <li>
+                    <a class="dropdown-item" href="/keranjang" wire:navigate>Keranjang</a>
+                </li>
+                <li>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="dropdown-item">

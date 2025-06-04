@@ -4,11 +4,13 @@ namespace App\Livewire\Customer;
 
 use App\Livewire\MainBase;
 use App\Models\Book;
+use App\Models\Cart;
 use App\Models\Rental;
 use App\Models\RentalItem;
 use App\Models\Payment;
 use App\Models\Fines;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ShowProduct extends MainBase
@@ -109,6 +111,39 @@ class ShowProduct extends MainBase
 
         session()->flash('success', 'Buku berhasil disewa!');
         return redirect()->route('my-books');
+    }
+    public function addToCart()
+{
+    $this->validate([
+        'quantity' => 'required|integer|min:1|max:' . $this->book->stock,
+        'rental_date' => 'required|date|after_or_equal:today',
+        'return_date' => 'required|date|after:rental_date',
+    ]);
+
+    Cart::create([
+        'user_id' => Auth::id(),
+        'book_id' => $this->book->id,
+        'quantity' => $this->quantity,
+        'rental_date' => $this->rental_date,
+        'return_date' => $this->return_date,
+    ]);
+
+    session()->flash('success', 'Buku berhasil ditambahkan ke keranjang!');
+}
+    public function checkout()
+    {
+        $items = Cart::where('user_id', Auth::id())->get();
+
+        foreach ($items as $item) {
+            // Simpan ke tabel peminjaman di sini, misalnya Rental::create(...);
+        }
+
+        Cart::where('user_id', Auth::id())->delete();
+        session()->flash('message', 'Checkout berhasil.');
+    }
+    public function removeFromCart($id)
+    {
+        Cart::find($id)?->delete();
     }
 
     public function render()

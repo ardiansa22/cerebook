@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Rental extends Model
 {
     /** @use HasFactory<\Database\Factories\RentalFactory> */
-    protected $fillable = ['user_id', 'status', 'book_id','rental_date','return_date','total_price'];
+    protected $fillable = ['user_id', 'status', 'book_id','rental_date','return_date','total_price','actual_return_date'];
     protected $casts = [
     'rental_date' => 'date',
     'return_date' => 'date',
