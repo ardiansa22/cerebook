@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // optional, untuk clarity
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
@@ -25,10 +25,19 @@ class RoleMiddleware
 
         $user = Auth::user();
 
-        if (!in_array($user->role, $roles)) {
-            abort(403, 'Unauthorized');
+        // Jika role user cocok dengan salah satu role yang diperbolehkan, lanjutkan
+        if (in_array($user->role, $roles)) {
+            return $next($request);
         }
 
-        return $next($request);
+        // Jika role tidak cocok, redirect berdasarkan role
+        switch ($user->role) {
+            case 'customer':
+                return redirect()->route('home');
+            case 'admin':
+                return redirect()->route('dashboard');
+            default:
+                return redirect()->route('home'); // fallback jika tidak ada role cocok
+        }
     }
 }

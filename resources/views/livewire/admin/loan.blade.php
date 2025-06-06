@@ -144,9 +144,35 @@
                             <flux:input type="text" label="Total Price" :value="$selectedRental?->total_price" disabled />
                         </div>
                         <div>
-                            <flux:input type="date" label="Tanggal Pengembalian Aktual" wire:model="actualReturnDate" />
-                            @error('actualReturnDate') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    <flux:input type="date" label="Tanggal Pengembalian Aktual" wire:model="actualReturnDate" 
+                                wire:change="calculateFine" />
+                    @error('actualReturnDate') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                </div>
+
+                @if($showFineDetails)
+                    <div class="border-t border-gray-200 pt-4 bg-red-100 rounded-lg p-4">
+                        <h4 class="text-md font-medium text-gray-900 mb-2">Detail Denda</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Hari Keterlambatan:</p>
+                                <p class="font-medium">{{ $lateDays }} hari</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Total Denda:</p>
+                                <p class="font-medium">Rp {{ number_format($fineAmount, 0, ',', '.') }}</p>
+                            </div>
                         </div>
+                        
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Metode Pembayaran</label>
+                            <select wire:model="paymentMethod" class="block w-full border border-gray-300 rounded p-2 bg-white">
+                                <option value="cash">Tunai</option>
+                                <option value="transfer">Transfer Bank</option>
+                                <option value="qris">QRIS</option>
+                            </select>
+                        </div>
+                    </div>
+                    @endif
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Upload Bukti Pengembalian (Opsional)</label>
                             <input type="file" wire:model="proofImage" class="block w-full border border-gray-300 rounded p-1">

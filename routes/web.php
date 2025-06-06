@@ -21,15 +21,17 @@ use App\Models\Cart;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/',Index::class)->name('home');
-Route::get('/book/{book}', ShowProduct::class)->name('book.show');
-Route::get('/my-books', MyBooks::class)->name('my-books');
-Route::get('/Explore/{categori:name}', ExploreBook::class)->name('categori.book');
-Route::get('/keranjang', CartComponent::class)->name('keranjang');
 
 
+
+Route::middleware(['auth', 'role:customer', 'verified'])->group(function () {
+    Route::get('/book/{book}', ShowProduct::class)->name('book.show');
+    Route::get('/my-books', MyBooks::class)->name('my-books');
+    Route::get('/Explore/{categori:name}', ExploreBook::class)->name('categori.book');
+    Route::get('/keranjang', CartComponent::class)->name('keranjang');
+});
 Route::middleware(['auth', 'role:admin', 'verified'])->group(function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
-
     Route::redirect('settings', 'settings/profile');
     Route::get('settings/profile', Profile::class)->name('settings.profile');
     Route::get('categories', Categories::class)->name('admin.categories');

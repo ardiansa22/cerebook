@@ -26,7 +26,7 @@
                 <flux:navlist.item icon="document-text" href="/return" wire:navigate>Pengembalian Buku</flux:navlist.item>
                 <flux:navlist.item icon="calendar" href="/genre" wire:navigate>Riwayat Peminjaman</flux:navlist.item>
             </flux:navlist.group>
-             <flux:navlist.group expandable heading="Pembayaran & Denda" class="hidden lg:grid">
+             <!-- <flux:navlist.group expandable heading="Pembayaran & Denda" class="hidden lg:grid">
                 <flux:navlist.item icon="inbox" href="/book" wire:navigate>Pembayaran</flux:navlist.item>
                 <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Denda Terlambat</flux:navlist.item>
             </flux:navlist.group>
@@ -34,7 +34,7 @@
                 <flux:navlist.item icon="inbox" href="/book" wire:navigate>Laporan Peminjaman</flux:navlist.item>
                 <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Laporan Denda</flux:navlist.item>
                 <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Laporan Buku paling populer</flux:navlist.item>
-            </flux:navlist.group>
+            </flux:navlist.group> -->
              <flux:navlist.group expandable heading="Pengguna" class="hidden lg:grid">
                 <flux:navlist.item icon="user" href="/book" wire:navigate>Data Pengguna</flux:navlist.item>
                 <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Kelola Role</flux:navlist.item>
