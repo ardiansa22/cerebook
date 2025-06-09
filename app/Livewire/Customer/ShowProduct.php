@@ -112,9 +112,6 @@ class ShowProduct extends MainBase
                 'method' => $this->paymentMethod,
                 'status' => 'pending',
             ]);
-
-            // Kurangi stok buku
-            $book->decrement('stock', $this->quantity);
         });
 
         // Konfigurasi Midtrans
@@ -153,6 +150,7 @@ class ShowProduct extends MainBase
         return redirect()->back();
     }
 }
+
 
 
     public function addToCart()
