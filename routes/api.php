@@ -9,4 +9,4 @@ use App\Http\Controllers\MidtransController;
 //products
 // Route::apiResource('/book', BookController::class);
 
-Route::post('midtrans-callback', [MidtransController::class, 'callback']);
+Route::post('/midtrans-callback', [MidtransController::class, 'callback']);
