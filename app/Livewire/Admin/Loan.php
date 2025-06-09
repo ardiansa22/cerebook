@@ -12,7 +12,7 @@ class Loan extends MainBase
 {
     use WithFileUploads;
 
-    public $returnDate;
+     public $returnDate;
     public $proofImage;
     public $selectedRental;
     public $actualReturnDate;

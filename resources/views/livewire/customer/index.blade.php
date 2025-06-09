@@ -67,43 +67,53 @@
             </div>
         </div>
     </div>
-    <!-- Swiper Carousel -->
-    <div class="swiper-container mb-3">
-    <h6 class="fw-bold">Buku Populer untuk Anda</h6>
-    <div class="swiper-wrapper">
-        @foreach ($books as $book)
-        <div class="swiper-slide">
-            <a href="{{ route('book.show', $book->id) }}" class="text-decoration-none text-dark">
-                <div class="card p-2 h-100">
-                    <img src="{{ asset('storage/books/' . $book->image) }}" class="card-img-top" alt="Gambar {{ $book->title }}">
-                    <div class="card-body text-start">
-                        <p class="text-muted mb-1" style="font-size: 11px;">Cerebook</p>
-                        <h6 class="card-title mb-1">{{ $book->title }}</h6>
-                        <p class="text-muted mb-1">Rp {{ number_format($book->price, 0, ',', '.') }}</p>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endforeach
+    <div class="container mb-4">
+    <div class="book-card">
+        {{-- Tambahkan mx-auto d-block agar gambar berada di tengah --}}
+        <img src="{{ asset('img/banner.png') }}" alt="Judul Buku" class="book-cover img-fluid mx-auto d-block"> 
     </div>
 </div>
-    <div class="swiper-container mb-5">
-    <h6 class="fw-bold">Non-Buku Populer untuk Anda</h6>
-    <div class="swiper-wrapper">
-        @foreach ($products as $product)
-        <div class="swiper-slide">
-            <a href="" class="text-decoration-none text-dark">
-                <div class="card p-2 h-100">
-                    <img src="{{ asset('storage/pruducts/' . $product->image) }}" class="card-img-top" alt="Gambar {{ $product->title }}">
-                    <div class="card-body text-start">
-                        <p class="text-muted mb-1" style="font-size: 11px;">Cereproduct</p>
-                        <h6 class="card-title mb-1">{{ $product->title }}</h6>
-                        <p class="text-muted mb-1">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
-                    </div>
+
+    {{-- Buku Populer --}}
+    <div class="mb-3">
+        <h6 class="fw-bold">Buku Populer untuk Anda</h6>
+        <div class="grid-container">
+            @foreach ($books as $book)
+                <div class="grid-item">
+                    <a href="{{ route('book.show', $book->id) }}" wire:navigate class="text-decoration-none text-dark">
+                        <div class="card p-2 h-100">
+                            <img src="{{ asset('storage/books/' . $book->image) }}" class="card-img-top" alt="Gambar {{ $book->title }}">
+                            <div class="card-body text-start">
+                                <p class="text-muted mb-1" style="font-size: 11px;">Cerebook</p>
+                                <h6 class="card-title mb-1">{{ $book->title }}</h6>
+                                <p class="text-muted mb-1">Rp {{ number_format($book->price, 0, ',', '.') }}</p>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-            </a>
+            @endforeach
         </div>
-        @endforeach
     </div>
-</div>
+
+    {{-- Non-Buku Populer --}}
+    <div class="mb-5">
+        <h6 class="fw-bold">Non-Buku Populer untuk Anda</h6>
+        <div class="grid-container">
+            @foreach ($products as $product)
+                <div class="grid-item">
+                    <a href="#" class="text-decoration-none text-dark">
+                        <div class="card p-2 h-100">
+                            <img src="{{ asset('storage/pruducts/' . $product->image) }}" class="card-img-top" alt="Gambar {{ $product->title }}">
+                            <div class="card-body text-start">
+                                <p class="text-muted mb-1" style="font-size: 11px;">Cereproduct</p>
+                                <h6 class="card-title mb-1">{{ $product->title }}</h6>
+                                <p class="text-muted mb-1">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            @endforeach
+        </div>
+    </div>
+    
 </div>

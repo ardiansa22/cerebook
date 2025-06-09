@@ -1,4 +1,5 @@
 <div class="container mt-3">
+    
     @include('layouts.search')
     <div class="row">
         <!-- Kolom Kiri: Gambar -->
@@ -40,12 +41,12 @@
 
             <div class="my-3">
                 <span class="text-danger fs-4 fw-bold">Rp{{ number_format($book->price, 0, ',', '.') }}</span>
-                <span class="text-muted ms-2">/minggu</span>
+                <span class="text-muted ms-2">/day</span>
             </div>
 
             <div class="alert alert-light border d-flex align-items-center">
                 <i class="bi bi-info-circle me-2"></i>
-                <small class="text-muted">Denda keterlambatan Rp5.000/hari</small>
+                <small class="text-muted">Denda keterlambatan Rp5.000/day</small>
             </div>
 
             <div class="my-2">
@@ -145,17 +146,19 @@
                                     <option value="ewallet">E-Wallet</option>
                                 </select>
                             </div>
+                            
                         </div>
 
                         <div class="modal-footer d-flex gap-2">
                             @auth
                                 @if($book->stock > 0)
-                                    <button class="btn btn-primary shadow-sm py-2 flex-grow-1" 
-                                            wire:click="rental" 
+                                    <button class="btn btn-primary shadow-sm py-2 flex-grow-1"
+                                            wire:click="rental"
                                             wire:loading.attr="disabled" type="button">
                                         <span wire:loading.remove>Rent Now</span>
                                         <span wire:loading>Memproses...</span>
                                     </button>
+
 
                                     <button class="btn btn-danger shadow-sm py-2" 
                                             wire:click="addToCart" 
@@ -232,3 +235,77 @@
         modal.show();
     }
 </script>
+
+<script>
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('swal:success', (data) => {
+            console.log('Global Event diterima:', data);
+            Swal.fire({
+                title: data[0].title,
+                text: data[0].text,
+                showConfirmButton: false,  // hilangkan tombol OK
+                timer: 2000,               // tampil 2 detik (2000 ms)
+                timerProgressBar: true,    // progress bar (optional)
+            });
+        });
+    });
+</script>
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" 
+        data-client-key="{{ config('midtrans.client_key') }}"></script>
+<script type="text/javascript">
+document.addEventListener('livewire:init', () => {
+    Livewire.on('midtrans:pay', (payload) => {
+        const data = payload[0];
+        const snapToken = data.snapToken;
+        
+        // Hapus opsi embedId dan gunakan konfigurasi minimal
+        window.snap.pay(snapToken, {
+            onSuccess: function(result) {
+                console.log('success', result);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pembayaran berhasil!',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                });
+            },
+            onPending: function(result) {
+                console.log('pending', result);
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Menunggu pembayaran Anda!',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                });
+            },
+            onError: function(result) {
+                console.log('error', result);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Pembayaran gagal!',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                });
+            },
+            onClose: function() {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Popup ditutup sebelum pembayaran selesai!',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                });
+            }
+        });
+    });
+});
+</script>
+
+

@@ -1,68 +1,66 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap");
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
 }
-
-
 
 body::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 40px; /* Sesuaikan tinggi warna biru */
-  background: #1e3dc7;
-  z-index: -1;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40px; /* Sesuaikan tinggi warna biru */
+    background: #2c3e50;
+    z-index: -1;
 }
-.btn-prim{
-  background-color: #1e3dc7;
-  color: white;
+.btn-prim {
+    background-color: #caccd3;
+    color: white;
 }
 
 .greeting-card {
-  border-radius: 12px;
-  background: linear-gradient(135deg, #1e3dc7, #ebedee);
-  border: none;
-  transition: 0.3s ease-in-out;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #caccd3, #2c3e50);
+    border: none;
+    transition: 0.3s ease-in-out;
 }
 
 .greeting-card:hover {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .greeting-card h5 {
-  color: #2c3e50;
+    color: #2c3e50;
 }
 
 .weather-info i {
-  font-size: 24px;
+    font-size: 24px;
 }
 
 .weather-info p {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 .category-icon {
-  width: 50px;
-  height: 50px;
-  background: #1e3dc7;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  color:white;
+    width: 50px;
+    height: 50px;
+    background: #2c3e50;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: rgb(3, 3, 3);
 }
 
 .category-img {
-  width: 60px;  /* Lebarkan */
+    width: 60px; /* Lebarkan */
     height: auto; /* Sesuaikan */
     filter: brightness(0) invert(1);
 }
 .category-img-goldfish {
-  width: 40px;  /* Lebarkan */
+    width: 40px; /* Lebarkan */
     height: auto; /* Sesuaikan */
     filter: brightness(0) invert(1);
 }
@@ -76,32 +74,31 @@ body::before {
     overflow: hidden;
 }
 .swiper-slide {
-  max-width: 300px;
-  flex-shrink: 0;
+    max-width: 300px;
+    flex-shrink: 0;
 }
 @media (max-width: 576px) {
-  .swiper-slide {
-    max-width: 80%;
-  }
+    .swiper-slide {
+        max-width: 80%;
+    }
 }
 
-
-  .card {
-  /* max-height: 280px; */
-  /* border: 0; */
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(99, 127, 187, 0.1);
-  }
-  .card-body {
+.card {
+    /* max-height: 280px; */
+    /* border: 0; */
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(99, 127, 187, 0.1);
+}
+.card-body {
     padding: 3px; /* Default 16px, dikurangi agar lebih compact */
-  }
-  .card-img-top {
-  width: 100%; /* Sesuaikan dengan lebar card */
-  height: 150px; /* Atur tinggi tetap */
-  object-fit: cover; /* Pastikan gambar tetap proporsional tanpa terdistorsi */
-  /* border-radius: 20px;   */
-  }
-  .mobile-navbar {
+}
+.card-img-top {
+    width: 100%; /* Sesuaikan dengan lebar card */
+    height: 150px; /* Atur tinggi tetap */
+    object-fit: cover; /* Pastikan gambar tetap proporsional tanpa terdistorsi */
+    /* border-radius: 20px;   */
+}
+.mobile-navbar {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -111,109 +108,108 @@ body::before {
     display: flex;
     justify-content: space-around;
     padding: 10px 0;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #7f8c8d;
     z-index: 1000; /* Agar selalu di atas */
-  }
-  
-  .mobile-navbar .nav-item {
+}
+
+.mobile-navbar .nav-item {
     text-align: center;
     flex-grow: 1;
     color: #555;
     text-decoration: none;
     font-size: 14px;
-  }
-  
-  .mobile-navbar .nav-item i {
+}
+
+.mobile-navbar .nav-item i {
     display: block;
     font-size: 18px;
     margin-bottom: 3px;
-  }
-  
-  .mobile-navbar .nav-item:active,
-  .mobile-navbar .nav-item:hover {
-    color: #608BC1;
-  }
-  /* dasboard */
-  .dashboard{
-    padding-bottom: 20px;
-  }
+}
 
-  /* Category Page */
-  .category{
+.mobile-navbar .nav-item:active,
+.mobile-navbar .nav-item:hover {
+    color: #608bc1;
+}
+/* dasboard */
+.dashboard {
+    padding-bottom: 20px;
+}
+
+/* Category Page */
+.category {
     padding-bottom: 70px;
-  }
-  .card-category-top {
+}
+.card-category-top {
     height: 180px;
     object-fit: cover;
 }
 
 /* Detail Page */
-.detail{
-  padding-bottom: 80px;
+.detail {
+    padding-bottom: 80px;
 }
 .title {
-  border-radius: 0;
+    border-radius: 0;
 }
 .fasility {
-  border-radius: 0;
+    border-radius: 0;
 }
 .detail .detail-card {
-  border: none;
-  background: linear-gradient(135deg, #1e3dc7, #ebedee);
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    background: linear-gradient(135deg, #caccd3, #ebedee);
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .detail .detail-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .detail .detail-img {
-  height: 200px;
-  object-fit: cover;
-  width: 100%;
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
 }
 
 .detail .text-danger {
-  font-size: 1.2rem;
+    font-size: 1.2rem;
 }
 /* booking */
 .booking {
-  padding-bottom: 70px;
+    padding-bottom: 70px;
 }
 
 /* list */
 .list {
-  padding-bottom: 65px;
+    padding-bottom: 65px;
 }
 .card-header {
-  background-color: #1e3dc7;
-  color: white;
+    background-color: #caccd3;
+    color: white;
 }
 /* etiket */
-.etiket{
-  padding-bottom: 70px;
+.etiket {
+    padding-bottom: 70px;
 }
 /* sesi */
 
 .sesi-card {
-  border-radius: 12px;
-  background: linear-gradient(135deg, #1e3dc7, #ebedee);
-  border: none;
-  transition: 0.3s ease-in-out;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #caccd3, #ebedee);
+    border: none;
+    transition: 0.3s ease-in-out;
 }
 
 .sesi-card:hover {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .sesi-card h5 {
-  color: #2c3e50;
+    color: #2c3e50;
 }
-
 
 .carousel-image {
     max-height: 300px; /* Atur sesuai kebutuhan */
@@ -228,15 +224,85 @@ body::before {
 }
 
 .main-image {
-        max-width: 100%;
-        max-height: 500px;
-        object-fit: cover;
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: cover;
 }
 .category-icon {
-  transition: background-color 0.3s ease, transform 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 .category-icon:hover {
-  background-color: #1e3dc7;
-  transform: scale(1.05);
+    background-color: #caccd3;
+    transform: scale(1.05);
 }
-  
+
+@media (max-width: 767.98px) {
+    body {
+        padding-bottom: 100px; /* Sesuaikan dengan tinggi card */
+    }
+}
+/* resources/css/app.css atau di <style> tag di blade Anda */
+.swal2-popup {
+    font-size: 0.8em !important; /* Mengurangi ukuran font keseluruhan */
+    padding: 0.5em !important; /* Mengurangi padding internal */
+    width: auto !important; /* Biarkan lebar otomatis */
+    max-width: 250px !important; /* Batasi lebar maksimum */
+}
+
+.swal2-title {
+    font-size: 1.1em !important; /* Mengurangi ukuran font judul */
+    margin-bottom: 0.2em !important;
+}
+
+.swal2-html-container {
+    font-size: 0.9em !important; /* Mengurangi ukuran font teks */
+    margin-top: 0.2em !important;
+    margin-bottom: 0.5em !important;
+}
+
+.swal2-icon {
+    width: 2em !important; /* Mengurangi ukuran ikon */
+    height: 2em !important;
+    margin-bottom: 0.5em !important;
+}
+
+.swal2-actions {
+    margin-top: 0.5em !important;
+}
+
+.swal2-styled.swal2-confirm,
+.swal2-styled.swal2-cancel {
+    font-size: 0.8em !important; /* Mengurangi ukuran font tombol */
+    padding: 0.3em 0.8em !important; /* Mengurangi padding tombol */
+}
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 992px) {
+    .grid-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Ubah ini supaya di HP sampai 480px tetap 2 kolom */
+@media (max-width: 480px) {
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Kalau ingin 1 kolom cuma di bawah 320px */
+@media (max-width: 320px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+}

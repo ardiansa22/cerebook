@@ -27,7 +27,7 @@ class ShowProduct extends MainBase
     {
         $this->book = $book;
         $this->rental_date = Carbon::today()->format('Y-m-d');
-        $this->return_date = Carbon::today()->addDays(7)->format('Y-m-d');
+        $this->return_date = Carbon::today()->addDays(1)->format('Y-m-d');
         $this->calculateTotal();
     }
 
@@ -68,17 +68,25 @@ class ShowProduct extends MainBase
         $this->rental();
     }
 
-    public function rental()
-    {
-        DB::transaction(function () {
+   public function rental()
+{
+    try {
+        // Variabel untuk menyimpan objek rental
+        $rental = null;
+
+        DB::transaction(function () use (&$rental) {
+            // Ambil data buku secara eksklusif
             $book = Book::where('id', $this->book->id)->lockForUpdate()->first();
 
-            if ($book->stock < $this->quantity) {
-                session()->flash('error', 'Stok tidak mencukupi!');
-                return;
+            if (!$book) {
+                throw new \Exception('Buku tidak ditemukan!');
             }
 
-            // Create rental
+            if ($book->stock < $this->quantity) {
+                throw new \Exception('Stok tidak mencukupi!');
+            }
+
+            // Buat data rental
             $rental = Rental::create([
                 'user_id' => auth()->id(),
                 'book_id' => $book->id,
@@ -88,7 +96,7 @@ class ShowProduct extends MainBase
                 'total_price' => $this->totalPrice,
             ]);
 
-            // Create rental item
+            // Simpan detail rental item
             RentalItem::create([
                 'rental_id' => $rental->id,
                 'book_id' => $book->id,
@@ -96,50 +104,91 @@ class ShowProduct extends MainBase
                 'sub_total' => $this->totalPrice,
             ]);
 
-            // Create payment
+            // Simpan data pembayaran awal
             Payment::create([
                 'rental_id' => $rental->id,
                 'payment_date' => now(),
                 'amount' => $this->totalPrice,
                 'method' => $this->paymentMethod,
-                'status' => 'paid',
+                'status' => 'pending',
             ]);
 
-            // Update book stock
+            // Kurangi stok buku
             $book->decrement('stock', $this->quantity);
         });
 
-        session()->flash('success', 'Buku berhasil disewa!');
-        return redirect()->route('my-books');
+        // Konfigurasi Midtrans
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = false;
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
+
+        // Buat parameter pembayaran Midtrans
+        $params = [
+            'transaction_details' => [
+                'order_id' => 'RENTAL-' . $rental->id,
+                'gross_amount' => $this->totalPrice,
+            ],
+            'customer_details' => [
+                'first_name' => auth()->user()->name,
+                'email' => auth()->user()->email,
+                'phone' => auth()->user()->phone ?? '0811111111',
+            ],
+        ];
+
+        // Ambil SnapToken dari Midtrans
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+        // Kirim event ke frontend untuk trigger Midtrans
+        $this->dispatch('midtrans:pay', [
+            'snapToken' => $snapToken
+        ]);
+
+        $this->showRentalModal = false;
+        return redirect()->back();
+
+    } catch (\Exception $e) {
+        // Tangani error
+        session()->flash('error', 'Gagal menyewa buku: ' . $e->getMessage());
+        return redirect()->back();
     }
-    public function addToCart()
-{
-    $this->validate([
-        'quantity' => 'required|integer|min:1|max:' . $this->book->stock,
-        'rental_date' => 'required|date|after_or_equal:today',
-        'return_date' => 'required|date|after:rental_date',
-    ]);
-
-    Cart::create([
-        'user_id' => Auth::id(),
-        'book_id' => $this->book->id,
-        'quantity' => $this->quantity,
-        'rental_date' => $this->rental_date,
-        'return_date' => $this->return_date,
-    ]);
-
-    session()->flash('success', 'Buku berhasil ditambahkan ke keranjang!');
 }
-    public function checkout()
-    {
-        $items = Cart::where('user_id', Auth::id())->get();
 
-        foreach ($items as $item) {
-            // Simpan ke tabel peminjaman di sini, misalnya Rental::create(...);
+
+    public function addToCart()
+    {
+        $this->validate([
+            'quantity' => 'required|integer|min:1|max:' . $this->book->stock,
+            'rental_date' => 'required|date|after_or_equal:today',
+            'return_date' => 'required|date|after:rental_date',
+        ]);
+        $exists = Cart::where('user_id', Auth::id())
+            ->where('book_id', $this->book->id)
+            ->where('rental_date', $this->rental_date)
+            ->where('return_date', $this->return_date)
+            ->first();
+
+        if ($exists) {
+            $exists->quantity += $this->quantity;
+            $exists->save();
+        } else {
+             Cart::create([
+            'user_id' => Auth::id(),
+            'book_id' => $this->book->id,
+            'quantity' => $this->quantity,
+            'rental_date' => $this->rental_date,
+            'return_date' => $this->return_date,
+        ]);
         }
 
-        Cart::where('user_id', Auth::id())->delete();
-        session()->flash('message', 'Checkout berhasil.');
+       
+
+         $this->dispatch('swal:success', [
+            'icon' => 'success',
+            'title' => 'Berhasil!',
+            'text' => 'Buku berhasil ditambahkan ke keranjang!',
+        ]);
+        $this->showRentalModal = false;
     }
     public function removeFromCart($id)
     {
