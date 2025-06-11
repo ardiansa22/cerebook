@@ -34,7 +34,7 @@ class MidtransController extends Controller
         }
 
         // Ekstrak rental_id dari order_id (format: RENTAL-{id})
-        $rentalId = str_replace('RENTAL-', '', $request->order_id);
+        $rentalId = str_replace('RENT-', '', $request->order_id);
         
         DB::transaction(function () use ($request, $rentalId) {
             // Temukan rental

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('return_date');
             $table->date('actual_return_date')->nullable();
             $table->enum('status', ['rented', 'returned', 'late', 'cancelled'])->default('rented');
+            $table->string('return_evidence')->nullable();
             $table->decimal('total_price', 10, 2)->default(0);
             $table->timestamps();
         });

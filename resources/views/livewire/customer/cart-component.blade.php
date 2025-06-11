@@ -1,7 +1,7 @@
 <div class="container mt-3">
     @include('layouts.search')
     @if($cartItems->isEmpty())
-        <div class="alert alert-info">Keranjang Anda kosong</div>
+        <div class="alert alert-info mt-3   ">Keranjang Anda kosong</div>
     @else
         @php $grandTotal = 0; @endphp
         <div class="card shadow-sm mt-3">

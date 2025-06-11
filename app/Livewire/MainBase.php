@@ -115,9 +115,9 @@ abstract class MainBase extends Component
 {
     try {
         // $this->validate($this->getValidationRules());
-
+        
         $data = $this->fields;
-
+        // dd($data);
         // Buat record utama
         $record = $this->model::create($data);
 

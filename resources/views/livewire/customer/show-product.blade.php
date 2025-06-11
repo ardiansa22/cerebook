@@ -60,7 +60,7 @@
                     <div class="col-md-6">
                         <label class="form-label small">Tanggal Kembali</label>
                         <input type="date" wire:model="return_date" class="form-control form-control-sm">
-                        @error('return_date') <span class="text-danger small">{{ $message }}</span> @enderror
+                        @error('return_date') <span class="text-danger small" wire:click="updatedReturnDate">{{ $message }}</span> @enderror
                     </div>
                 </div>
             </div>
@@ -74,17 +74,17 @@
                 </div>
                 <small class="text-muted">Stok tersedia: {{ $book->stock }}</small>
             </div>
+            @php
+                use Carbon\Carbon;
 
-            <div class="my-3 bg-light p-3 rounded">
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Subtotal:</span>
-                    <span>Rp{{ number_format($book->price * $quantity, 0, ',', '.') }}</span>
-                </div>
-                <div class="d-flex justify-content-between fw-bold">
-                    <span>Total:</span>
-                    <span class="text-danger">Rp{{ number_format($totalPrice, 0, ',', '.') }}</span>
-                </div>
-            </div>
+                $start = Carbon::parse($rental_date);
+                $end = Carbon::parse($return_date);
+                $days = $start->diffInDays($end) > 0 ? $start->diffInDays($end) : 1;
+
+                $subtotal = $book->price * $quantity * $days;
+            @endphp
+
+
 
             @auth
                 @if($book->stock > 0)
@@ -108,82 +108,97 @@
             @endguest
 
             {{-- Modal Konfirmasi Penyewaan --}}
+            <!-- Modal Konfirmasi Penyewaan -->
             @if ($showRentalModal)
-            <div class="modal fade show d-block" tabindex="-1" 
-                 style="background-color: rgba(0,0,0,0.5); z-index:1050;">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index:1050;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
 
-                        <div class="modal-header">
-                            <h5 class="modal-title">Konfirmasi Penyewaan</h5>
-                            <button type="button" class="btn-close" 
-                                    wire:click="$set('showRentalModal', false)">
-                            </button>
+                <div class="modal-header">
+                    <h5 class="modal-title">Konfirmasi Penyewaan</h5>
+                    <button type="button" class="btn-close" wire:click="$set('showRentalModal', false)"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <img src="{{ asset('storage/books/' . $book->image) }}" 
+                             class="img-fluid rounded mb-2" 
+                             style="max-height: 200px; object-fit: cover;" 
+                             alt="Cover Buku">
+
+                        <h5 class="fw-bold">Rp{{ number_format($totalPrice, 0, ',', '.') }}</h5>
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="mb-1 text-center"><strong>{{ $book->title }}</strong></p>
+                        
+                        <div class="row small text-muted">
+                            <div class="col-6">Sewa</div>
+                            <div class="col-6 text-end">{{ \Carbon\Carbon::parse($rental_date)->format('d M Y') }}</div>
+
+                            <div class="col-6">Kembali</div>
+                            <div class="col-6 text-end">{{ \Carbon\Carbon::parse($return_date)->format('d M Y') }}</div>
+
+                            <div class="col-6">Jumlah</div>
+                            <div class="col-6 text-end">{{ $quantity }} buku</div>
+
+                            <div class="col-6">Harga per Buku</div>
+                            <div class="col-6 text-end">Rp{{ number_format($book->price, 0, ',', '.') }}</div>
+
+                            <div class="col-6">Total Hari Sewa</div>
+                            <div class="col-6 text-end">{{ $days }} hari</div>
+
+                            <div class="col-6">Subtotal</div>
+                            <div class="col-6 text-end">Rp{{ number_format($subtotal, 0, ',', '.') }}</div>
                         </div>
+                    </div>
 
-                        <div class="modal-body text-center">
-                            <img src="{{ asset('storage/books/' . $book->image) }}" 
-                                 class="img-fluid rounded mb-3" 
-                                 style="max-height: 200px; object-fit: cover;" 
-                                 alt="Cover Buku">
-
-                            <h5 class="fw-bold mb-3">Rp{{ number_format($totalPrice, 0, ',', '.') }}</h5>
-
-                            <div class="mb-3">
-                                <p class="mb-1"><strong>{{ $book->title }}</strong></p>
-                                <p class="small text-muted mb-0">
-                                    Sewa: {{ \Carbon\Carbon::parse($rental_date)->format('d M Y') }}<br>
-                                    Kembali: {{ \Carbon\Carbon::parse($return_date)->format('d M Y') }}<br>
-                                    Jumlah: {{ $quantity }} buku
-                                </p>
-                            </div>
-
-                            <div class="mb-3 text-start">
-                                <label for="paymentMethod" class="form-label small fw-semibold">Metode Pembayaran</label>
-                                <select id="paymentMethod" wire:model="paymentMethod" class="form-select form-select-sm">
-                                    <option value="transfer">Transfer Bank</option>
-                                    <option value="cash">Tunai</option>
-                                    <option value="ewallet">E-Wallet</option>
-                                </select>
-                            </div>
-                            
-                        </div>
-
-                        <div class="modal-footer d-flex gap-2">
-                            @auth
-                                @if($book->stock > 0)
-                                    <button class="btn btn-primary shadow-sm py-2 flex-grow-1"
-                                            wire:click="rental"
-                                            wire:loading.attr="disabled" type="button">
-                                        <span wire:loading.remove>Rent Now</span>
-                                        <span wire:loading>Memproses...</span>
-                                    </button>
-
-
-                                    <button class="btn btn-danger shadow-sm py-2" 
-                                            wire:click="addToCart" 
-                                            wire:loading.attr="disabled" type="button">
-                                        <span wire:loading.remove>+ Keranjang</span>
-                                        <span wire:loading>Memproses...</span>
-                                    </button>
-                                @else
-                                    <button class="btn btn-secondary shadow-sm px-4 py-2" disabled type="button">
-                                        Stok Habis
-                                    </button>
-                                @endif
-                            @endauth
-
-                            @guest
-                                <a href="{{ route('login') }}" class="btn btn-primary shadow-sm px-4 py-2">
-                                    Masuk untuk Sewa
-                                </a>
-                            @endguest
-                        </div>
-
+                    <div class="mb-3">
+                        <label for="paymentMethod" class="form-label small fw-semibold">Metode Pembayaran</label>
+                        <select id="paymentMethod" wire:model="paymentMethod" class="form-select form-select-sm">
+                            <option value="transfer">Transfer Bank</option>
+                            <option value="cash">Tunai</option>
+                            <option value="ewallet">E-Wallet</option>
+                        </select>
                     </div>
                 </div>
+
+                <div class="modal-footer d-flex gap-2">
+                    @auth
+                        @if($book->stock > 0)
+                            <button class="btn btn-primary shadow-sm py-2 flex-grow-1"
+                                    wire:click="rental"
+                                    wire:loading.attr="disabled" type="button">
+                                <span wire:loading.remove>Rent Now</span>
+                                <span wire:loading>Memproses...</span>
+                            </button>
+
+                            <button class="btn btn-danger shadow-sm py-2" 
+                                    wire:click="addToCart" 
+                                    wire:loading.attr="disabled" type="button">
+                                <span wire:loading.remove>+ Keranjang</span>
+                                <span wire:loading>Memproses...</span>
+                            </button>
+                        @else
+                            <button class="btn btn-secondary shadow-sm px-4 py-2" disabled type="button">
+                                Stok Habis
+                            </button>
+                        @endif
+                    @endauth
+
+                    @guest
+                        <a href="{{ route('login') }}" class="btn btn-primary shadow-sm px-4 py-2">
+                            Masuk untuk Sewa
+                        </a>
+                    @endguest
+                </div>
+
             </div>
-            @endif
+        </div>
+    </div>
+@endif
+
+
 
             @php
                 $words = explode(' ', $book->description);
@@ -227,85 +242,6 @@
     </div>
 </div>
 
-<script>
-    function showModal(imageUrl) {
-        const modalImage = document.getElementById('modalImage');
-        modalImage.src = imageUrl;
-        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
-        modal.show();
-    }
-</script>
 
-<script>
-    document.addEventListener('livewire:init', () => {
-        Livewire.on('swal:success', (data) => {
-            console.log('Global Event diterima:', data);
-            Swal.fire({
-                title: data[0].title,
-                text: data[0].text,
-                showConfirmButton: false,  // hilangkan tombol OK
-                timer: 2000,               // tampil 2 detik (2000 ms)
-                timerProgressBar: true,    // progress bar (optional)
-            });
-        });
-    });
-</script>
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" 
-        data-client-key="{{ config('midtrans.client_key') }}"></script>
-<script type="text/javascript">
-document.addEventListener('livewire:init', () => {
-    Livewire.on('midtrans:pay', (payload) => {
-        const data = payload[0];
-        const snapToken = data.snapToken;
-        
-        // Hapus opsi embedId dan gunakan konfigurasi minimal
-        window.snap.pay(snapToken, {
-            onSuccess: function(result) {
-                console.log('success', result);
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Pembayaran berhasil!',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                });
-            },
-            onPending: function(result) {
-                console.log('pending', result);
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Menunggu pembayaran Anda!',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                });
-            },
-            onError: function(result) {
-                console.log('error', result);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Pembayaran gagal!',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                });
-            },
-            onClose: function() {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Popup ditutup sebelum pembayaran selesai!',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                });
-            }
-        });
-    });
-});
-</script>
 
 

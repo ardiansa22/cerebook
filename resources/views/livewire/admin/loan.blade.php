@@ -6,7 +6,7 @@
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-semibold">Data Peminjaman Buku</h2>
         <div class="flex space-x-4">
-            @include('layouts.component.createdel ')
+            <flux:button variant="primary" size="xs" wire:click="openCreateModal">Create New</flux:button>
         </div>
     </div>
   <div class="mb-4">
@@ -26,9 +26,6 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <input type="checkbox" wire:model.live="selectAll" wire:click="toggleSelectAll">
-                    </th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Transaksi</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Peminjam</th>
@@ -36,6 +33,7 @@
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Peminjaman</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Pengembalian</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Buku</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Denda</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
@@ -44,9 +42,6 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 @foreach($loans as $index => $loan)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <input type="checkbox" wire:model.live="selectedIds" value="{{ $loan->id }}">
-                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {{ $loans->firstItem() + $index }}
                         </td>
@@ -91,6 +86,9 @@
                             @endswitch
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {{ $loan->payment->status}}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             @foreach ($loan->items as $detail)
                                 {{ $detail->quantity }}
                             @endforeach
@@ -124,7 +122,7 @@
     <div class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                <div class="absolute inset-0 opacity-75"></div>
             </div>
 
             <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
@@ -175,13 +173,14 @@
                     @endif
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Upload Bukti Pengembalian (Opsional)</label>
-                            <input type="file" wire:model="proofImage" class="block w-full border border-gray-300 rounded p-1">
-                            @if ($proofImage)
+                            <input type="file" wire:model="return_evidence" class="block w-full border border-gray-300 rounded p-1">
+                            @if ($return_evidence)
                                 <div class="mt-2">
-                                    Preview: <img src="{{ $proofImage->temporaryUrl() }}" alt="Bukti" class="w-32 h-auto mt-1 rounded">
+                                    Preview: <img src="{{ $return_evidence->temporaryUrl() }}" alt="Bukti" class="w-32 h-auto mt-1 rounded">
                                 </div>
                             @endif
                         </div>
+                        @error('return_evidence') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
@@ -199,6 +198,19 @@
         </div>
     </div>
 @endif
-
 </div>
 </div>
+<script>
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('swal:success', (data) => {
+            console.log('Global Event diterima:', data);
+            Swal.fire({
+                title: data[0].title,
+                text: data[0].text,
+                showConfirmButton: false,  // hilangkan tombol OK
+                timer: 2000,               // tampil 2 detik (2000 ms)
+                timerProgressBar: true,    // progress bar (optional)
+            });
+        });
+    });
+</script>

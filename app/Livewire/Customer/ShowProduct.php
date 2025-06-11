@@ -33,10 +33,10 @@ class ShowProduct extends MainBase
 
     public function increment()
     {
-        if ($this->quantity < $this->book->stock) {
+       
             $this->quantity++;
             $this->calculateTotal();
-        }
+        
     }
 
     public function decrement()
@@ -49,19 +49,47 @@ class ShowProduct extends MainBase
 
     public function calculateTotal()
     {
-        $this->totalPrice = $this->book->price * $this->quantity;
-    }
+        $start = Carbon::parse($this->rental_date);
+        $end = Carbon::parse($this->return_date);
 
-    public function OpenRentalModal()
+        $days = $start->diffInDays($end);
+        $days = $days > 0 ? $days : 1;
+
+        $this->totalPrice = $this->book->price * $this->quantity * $days;
+    }
+    public function updatedRentalDate()
     {
-        $this->validate([
-            'quantity' => 'required|integer|min:1|max:' . $this->book->stock,
-            'rental_date' => 'required|date|after_or_equal:today',
-            'return_date' => 'required|date|after:rental_date',
-        ]);
-
-        $this->showRentalModal = true;
+        $this->calculateTotal();
     }
+
+    public function updatedReturnDate()
+    {
+        $this->calculateTotal();
+    }
+
+
+
+   public function OpenRentalModal()
+{
+    $this->validate([
+        'quantity' => 'required|integer|min:1',
+        'rental_date' => 'required|date|after_or_equal:today',
+        'return_date' => 'required|date|after:rental_date',
+    ]);
+
+    // Cek jika quantity melebihi stok buku
+    if ($this->quantity > $this->book->stock) {
+        $this->dispatch('swal:stok', [
+            'title' => 'Stok Tidak Cukup!',
+            'text' => 'Jumlah yang dipilih melebihi stok buku yang tersedia.',
+        ]);
+        return;
+    }
+
+    $this->showRentalModal = true;
+}
+
+
 
     public function confirmRental()
     {
@@ -123,7 +151,7 @@ class ShowProduct extends MainBase
         // Buat parameter pembayaran Midtrans
         $params = [
             'transaction_details' => [
-                'order_id' => 'RENTAL-' . $rental->id,
+                'order_id' => 'RENT-' . $rental->id,
                 'gross_amount' => $this->totalPrice,
             ],
             'customer_details' => [
