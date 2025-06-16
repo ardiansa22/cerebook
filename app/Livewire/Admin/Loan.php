@@ -92,7 +92,10 @@ public function getValidationRules()
     $fineAmount = 0;
     if ($actualReturnDate->gt($estimatedReturnDate)) {
         $lateDays = $actualReturnDate->diffInDays($estimatedReturnDate);
-        $fineAmount = $lateDays * 1000;
+
+        // Ambil fines_price dari relasi book
+        $finesPerDay = $rental->book->fines_price ?? 0;
+        $fineAmount = $lateDays * $finesPerDay;
 
         Fines::create([
             'rental_id' => $rental->id,
@@ -102,6 +105,7 @@ public function getValidationRules()
             'is_paid' => true,
         ]);
     }
+
 
     // Simpan bukti pengembalian
     $path = $this->return_evidence->store('return_evidence', 'public');

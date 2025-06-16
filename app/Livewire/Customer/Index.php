@@ -10,9 +10,10 @@ use Livewire\Component;
 
 class Index extends Component
 {
+    
     public function render()
     {
-        $books = Book::all();
+        $books = Book::with('discounts')->get(); // Tambahkan 'with'
         $products = Product::all();
         $categories = Category::where('is_active', true)->get();
         return view('livewire.customer.index',[

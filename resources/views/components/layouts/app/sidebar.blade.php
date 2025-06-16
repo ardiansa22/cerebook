@@ -19,7 +19,8 @@
                 <flux:navlist.item icon="inbox" href="/book" wire:navigate>Book</flux:navlist.item>
                 <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Categori</flux:navlist.item>
                 <flux:navlist.item icon="calendar" href="/genre" wire:navigate>Genre</flux:navlist.item>
-                <flux:navlist.item icon="calendar" href="#" wire:navigate>Books Review</flux:navlist.item>
+                <!-- <flux:navlist.item icon="calendar" href="#" wire:navigate>Books Review</flux:navlist.item> -->
+                <flux:navlist.item icon="calendar" href="/discount" wire:navigate>Discount</flux:navlist.item>
             </flux:navlist.group>
              <flux:navlist.group expandable heading="Borrowing" class="hidden lg:grid">
                 <flux:navlist.item icon="inbox" href="/loan" wire:navigate>Data Peminjaman</flux:navlist.item>

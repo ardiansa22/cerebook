@@ -22,7 +22,7 @@
                             <i class="fas fa-star text-warning"></i> {{ $book->rating ?? '4.0' }}/5 
                             ({{ $book->reviews_count ?? '0' }} Review) • {{ $book->location ?? 'Tidak Diketahui' }}
                         </p>
-                        <p class="fw-bold">Rp {{ number_format($book->price, 0, ',', '.') }}</p>
+                        <p class="fw-bold">Rp {{ number_format($book->rent_price, 0, ',', '.') }}</p>
                     </div>
                 </div>
             </a>

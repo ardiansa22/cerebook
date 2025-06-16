@@ -3,7 +3,7 @@
     @include('layouts.search')
     <div class="row">
         <!-- Kolom Kiri: Gambar -->
-        <div class="col-md-5 text-center mt-3">
+        <div class="col-md-6 text-center mt-3">
             <img 
                 src="{{ asset('storage/books/' . $book->image) }}" 
                 class="img-fluid rounded shadow-sm main-image" 
@@ -36,17 +36,23 @@
         </div>
 
         <!-- Kolom Kanan: Detail -->
-        <div class="col-md-7 mt-3">
-            <h5 class="fw-bold">{{ $book->title }}</h5>
-
+        <div class="col-md-6 mt-3">
+            <h2 class="fw-bold">{{ $book->title }}</h2>
             <div class="my-3">
-                <span class="text-danger fs-4 fw-bold">Rp{{ number_format($book->price, 0, ',', '.') }}</span>
-                <span class="text-muted ms-2">/day</span>
+                @if ($book->active_discount)
+                    <p>
+                        <del class="text-muted">Rp {{ number_format($book->rent_price, 0, ',', '.') }}</del>
+                        <span class="text-danger fw-bold">Rp {{ number_format($book->final_price, 0, ',', '.') }}</span>
+                        <span class="badge bg-success ms-2">-{{ $book->active_discount->percentage }}%</span>
+                    </p>
+                @else
+                    <p>Rp {{ number_format($book->rent_price, 0, ',', '.') }}</p>
+                @endif
             </div>
 
             <div class="alert alert-light border d-flex align-items-center">
                 <i class="bi bi-info-circle me-2"></i>
-                <small class="text-muted">Denda keterlambatan Rp5.000/day</small>
+                <small class="text-muted">Denda keterlambatan Rp{{ number_format($book->fines_price, 0, ',', '.') }} /day</small>
             </div>
 
             <div class="my-2">
@@ -81,7 +87,7 @@
                 $end = Carbon::parse($return_date);
                 $days = $start->diffInDays($end) > 0 ? $start->diffInDays($end) : 1;
 
-                $subtotal = $book->price * $quantity * $days;
+                $subtotal = $book->final_priceprice * $quantity * $days;
             @endphp
 
 
@@ -110,9 +116,9 @@
             {{-- Modal Konfirmasi Penyewaan --}}
             <!-- Modal Konfirmasi Penyewaan -->
             @if ($showRentalModal)
-    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index:1050;">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index:1050;">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
 
                 <div class="modal-header">
                     <h5 class="modal-title">Konfirmasi Penyewaan</h5>
@@ -143,7 +149,7 @@
                             <div class="col-6 text-end">{{ $quantity }} buku</div>
 
                             <div class="col-6">Harga per Buku</div>
-                            <div class="col-6 text-end">Rp{{ number_format($book->price, 0, ',', '.') }}</div>
+                            <div class="col-6 text-end">Rp{{ number_format($book->final_price, 0, ',', '.') }}</div>
 
                             <div class="col-6">Total Hari Sewa</div>
                             <div class="col-6 text-end">{{ $days }} hari</div>
@@ -192,7 +198,6 @@
                         </a>
                     @endguest
                 </div>
-
             </div>
         </div>
     </div>

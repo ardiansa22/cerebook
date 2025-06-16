@@ -86,7 +86,16 @@
                             <div class="card-body text-start">
                                 <p class="text-muted mb-1" style="font-size: 11px;">Cerebook</p>
                                 <h6 class="card-title mb-1">{{ $book->title }}</h6>
-                                <p class="text-muted mb-1">Rp {{ number_format($book->price, 0, ',', '.') }}</p>
+                                @if ($book->active_discount)
+                                    <p>
+                                        <del class="text-muted">Rp {{ number_format($book->rent_price, 0, ',', '.') }}</del>
+                                        <span class="text-danger fw-bold">Rp {{ number_format($book->final_price, 0, ',', '.') }}</span>
+                                        <span class="badge bg-success ms-2">-{{ $book->active_discount->percentage }}%</span>
+                                    </p>
+                                @else
+                                    <p>Rp {{ number_format($book->rent_price, 0, ',', '.') }}</p>
+                                @endif
+
                             </div>
                         </div>
                     </a>

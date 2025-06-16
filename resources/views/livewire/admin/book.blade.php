@@ -3,7 +3,7 @@
 @include('layouts.component.confirmdelete')
 
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-semibold">Genres</h2>
+        <h2 class="text-2xl font-semibold">Books</h2>
         <div class="flex space-x-4">
             @include('layouts.component.createdel ')
         </div>
@@ -63,7 +63,8 @@
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price Book</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rent Price</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Genre</th>
@@ -98,6 +99,9 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {{ number_format($book->price) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {{ number_format($book->rent_price) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {{ $book->stock }}
@@ -149,7 +153,7 @@
                         
                         <div class="space-y-4">
                             <div>
-                                <flux:input type="email" label="Email" wire:model="fields.name" 
+                                <flux:input type="text" label="Name" wire:model="fields.name" 
                                     id="name"/>
                                 @error('fields.name')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -174,13 +178,26 @@
                             </div>
                             
                             <div>
-                                <flux:input type="number" label="Price" wire:model="fields.price" 
+                                <flux:input type="number" label="Price Book" wire:model="fields.price" 
                                     id="price"/>
                                 @error('fields.price')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-                            
+                           <div>
+                                <flux:input type="number" label="Rent Price" wire:model="fields.rent_price" id="rent_price" readonly />
+                                <p class="mt-1 text-sm text-gray-500">Rent price will be automatically calculated as 35% of the book price.</p>
+                                @error('fields.rent_price')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <flux:input type="number" label="Fines Price" wire:model="fields.fines_price" id="fines_price" readonly />
+                                <p class="text-sm text-gray-500 mt-1">Fines will automatically appear when Price Book is filled</p>
+                                @error('fields.fines_price')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>    
                             <div>
                                 <flux:input type="number" label="Stock" wire:model="fields.stock" 
                                     id="stock"/>
