@@ -12,6 +12,22 @@ class Returns extends MainBase
         'return_date' => 'datetime',
         'actual_return_date' => 'datetime', // Asumsi ini adalah kolom untuk 'returned_at'
     ];
+    public function mount()
+    {
+        $this->model = Rental::class;
+        $this->fields = [
+        'user_id' => '',
+        'status' => '',
+        'book_id' => '',
+        'rental_date' => '',
+        'return_date' => '',
+        'total_price' => '',
+        'actual_return_date' =>'',
+        'return_evidence' => ''
+
+        ];
+        $this->searchableFields = ['name'];
+    }
     public function render()
     {
         $query = Rental::whereNotNull('actual_return_date')->with(['user', 'items', 'fine']);

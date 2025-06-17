@@ -3,10 +3,27 @@
 @include('layouts.component.swalert')
 @include('layouts.component.confirmdelete ')
 
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-semibold">Genres</h2>
-        <div class="flex space-x-4">
-            @include('layouts.component.createdel ')
+<div class="mb-6">
+    <!-- Judul halaman dan aksi -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+            <div>
+                <h2 class="text-2xl font-semibold text-gray-800">Categories</h2>
+
+                <!-- Breadcrumb dengan jarak -->
+                <div class="mt-2">
+                    @include('layouts.component.breadcrumb', [
+                        'breadcrumbs' => [
+                            ['label' => 'Dashboard', 'url' => route('dashboard')],
+                            ['label' => 'Genre']
+                        ]
+                    ])
+                </div>
+            </div>
+
+            <!-- Tombol aksi -->
+            <div class="flex space-x-2">
+                @include('layouts.component.createdel')
+            </div>
         </div>
     </div>
   <div class="mb-4">
@@ -47,14 +64,9 @@
                             {{ $genre->name }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                            wire:click="openEditModal({{ $genre->id }})"
-                            class="text-blue-600 hover:text-blue-900 mr-3"
-                        >
-                            <svg class="h-5 w-5 inline-block mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path d="M13.586 3.586a2 2 0 012.828 2.828l-7.93 7.931a2 2 0 01-2.828 0l-2.828-2.828a2 2 0 010-2.828l7.93-7.931a2 2 0 012.828 0zM1.414 10.586l7.93-7.93a2 2 0 012.828 2.828l-7.93 7.931a2 2 0 01-2.828 0z" />
-                            </svg>
-                        </button>
+                        <flux:button class="text-blue-600 hover:text-blue-900" wire:click="openEditModal({{ $genre->id }})" size="xs">
+                                    Edit
+                                </flux:button>
                         </td>
                     </tr>
                 @endforeach
@@ -81,7 +93,8 @@
                             <div>
                                     <flux:input type="email" label="Genre" wire:model="fields.name"
                                     id="name"/>
-                            </div>
+                            </div>\
+                            
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">

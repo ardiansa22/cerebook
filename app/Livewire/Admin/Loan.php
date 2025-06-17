@@ -40,19 +40,18 @@ class Loan extends MainBase
         $this->showModal();
     }
 
-public function getValidationRules()
-{
-    return [
-        'actualReturnDate' => [
-            'required',
-            'date',
-            'after_or_equal:' . $this->selectedRental->rental_date, // tidak boleh sebelum tanggal pinjam
-            'before_or_equal:' . now()->format('Y-m-d'), // tidak boleh lebih dari hari ini
-        ],
-        'return_evidence' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-    ];
-}
-
+    public function getValidationRules()
+    {
+        return [
+            'actualReturnDate' => [
+                'required',
+                'date',
+                'after_or_equal:' . $this->selectedRental->rental_date,
+                'before_or_equal:' . now()->format('Y-m-d'),
+            ],
+            'return_evidence' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ];
+    }
 
     public function calculateFine()
     {
@@ -73,76 +72,70 @@ public function getValidationRules()
     }
 
     public function processReturn()
-{
-    $this->validate($this->getValidationRules());
+    {
+        $this->validate($this->getValidationRules());
 
-    $rental = $this->selectedRental;
+        $rental = $this->selectedRental;
 
-    if (!$rental || $rental->status !== 'rented') {
-        $this->dispatchBrowserEvent('showNotification', [
-            'type' => 'error',
-            'message' => 'Pengembalian tidak valid.'
-        ]);
-        return;
-    }
-
-    $actualReturnDate = Carbon::parse($this->actualReturnDate);
-    $estimatedReturnDate = Carbon::parse($rental->return_date);
-
-    $fineAmount = 0;
-    if ($actualReturnDate->gt($estimatedReturnDate)) {
-        $lateDays = $actualReturnDate->diffInDays($estimatedReturnDate);
-
-        // Ambil fines_price dari relasi book
-        $finesPerDay = $rental->book->fines_price ?? 0;
-        $fineAmount = $lateDays * $finesPerDay;
-
-        Fines::create([
-            'rental_id' => $rental->id,
-            'fine_amount' => $fineAmount,
-            'days_late' => $lateDays,
-            'payment_method' => $this->paymentMethod,
-            'is_paid' => true,
-        ]);
-    }
-
-
-    // Simpan bukti pengembalian
-    $path = $this->return_evidence->store('return_evidence', 'public');
-
-    // Update data rental
-    $rental->update([
-        'status' => 'returned',
-        'actual_return_date' => $actualReturnDate->toDateTimeString(),
-        'return_evidence' => $path,
-    ]);
-
-    // Kembalikan stok buku
-    $rentalItems = $rental->items()->with('book')->get();
-    foreach ($rentalItems as $item) {
-        if ($item->book) {
-            $item->book->increment('stock', $item->quantity);
+        // Perbaikan di sini: izinkan status rented dan late
+        if (!$rental || !in_array($rental->status, ['rented', 'late'])) {
+            $this->dispatch('showNotification', [
+                'type' => 'error',
+                'message' => 'Pengembalian tidak valid.'
+            ]);
+            return;
         }
-    }
 
-    $message = 'Buku berhasil dikembalikan.';
-    if ($fineAmount > 0) {
-        $message .= ' Denda: Rp ' . number_format($fineAmount);
-    }
+        $actualReturnDate = Carbon::parse($this->actualReturnDate);
+        $estimatedReturnDate = Carbon::parse($rental->return_date);
 
-     $this->dispatch('swal:success', [
+        $fineAmount = 0;
+        if ($actualReturnDate->gt($estimatedReturnDate)) {
+            $lateDays = $actualReturnDate->diffInDays($estimatedReturnDate);
+            $finesPerDay = $rental->book->fines_price ?? 0;
+            $fineAmount = $lateDays * $finesPerDay;
+
+            Fines::create([
+                'rental_id' => $rental->id,
+                'fine_amount' => $fineAmount,
+                'days_late' => $lateDays,
+                'payment_method' => $this->paymentMethod,
+                'is_paid' => true,
+            ]);
+        }
+
+        $path = $this->return_evidence->store('return_evidence', 'public');
+
+        $rental->update([
+            'status' => 'returned',
+            'actual_return_date' => $actualReturnDate->toDateTimeString(),
+            'return_evidence' => $path,
+        ]);
+
+        $rentalItems = $rental->items()->with('book')->get();
+        foreach ($rentalItems as $item) {
+            if ($item->book) {
+                $item->book->increment('stock', $item->quantity);
+            }
+        }
+
+        $message = 'Buku berhasil dikembalikan.';
+        if ($fineAmount > 0) {
+            $message .= ' Denda: Rp ' . number_format($fineAmount);
+        }
+
+        $this->dispatch('swal:success', [
             'icon' => 'success',
             'title' => 'Berhasil!',
             'text' => $message,
         ]);
 
-    $this->showModal = false;
-}
-
+        $this->showModal = false;
+    }
 
     public function render()
     {
-        // Update status ke "late" jika sudah melewati return_date
+        // Perbarui status ke "late" jika lewat return_date
         $lateRentals = Rental::where('status', 'rented')
             ->whereDate('return_date', '<', now())
             ->get();
@@ -151,7 +144,7 @@ public function getValidationRules()
             $rental->update(['status' => 'late']);
         }
 
-        // Ambil data rental yang masih rented atau late dan sudah dibayar
+        // Ambil data rented dan late yang sudah dibayar
         $query = Rental::with(['book', 'user', 'items', 'fine', 'payment'])
             ->whereIn('status', ['rented', 'late'])
             ->whereHas('payment', function ($q) {
@@ -165,3 +158,4 @@ public function getValidationRules()
         ]);
     }
 }
+    

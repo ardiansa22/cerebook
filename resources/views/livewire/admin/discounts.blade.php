@@ -3,13 +3,31 @@
 <div x-data="{ showBookDropdown: @entangle('showBookDropdown') }"> {{-- Tambahkan x-data untuk Alpine.js --}}
 @include('layouts.component.swalert')
 @include('layouts.component.confirmdelete')
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-semibold">discounts</h2>
-        <div class="flex space-x-4">
-            @include('layouts.component.createdel ')
-            <flux:button variant="danger" size="xs" wire:click="toggleStatus">Aktif/nonaktif ({{ count($selectedIds) }})</flux:button>
+<div class="mb-6">
+    <!-- Judul halaman dan aksi -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+            <div>
+                <h2 class="text-2xl font-semibold text-gray-800">Discount</h2>
+
+                <!-- Breadcrumb dengan jarak -->
+                <div class="mt-2">
+                    @include('layouts.component.breadcrumb', [
+                        'breadcrumbs' => [
+                            ['label' => 'Dashboard', 'url' => route('dashboard')],
+                            ['label' => 'Discount']
+                        ]
+                    ])
+                </div>
+            </div>
+
+            <!-- Tombol aksi -->
+            <div class="flex space-x-4">
+                @include('layouts.component.createdel')
+                <flux:button variant="danger" size="xs" wire:click="toggleStatus">Aktif/nonaktif ({{ count($selectedIds) }})</flux:button>
+            </div>
         </div>
     </div>
+
 
     <div class="mb-4">
        @include('layouts.component.searchtable')
@@ -77,11 +95,8 @@
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500">
                             <div class="flex items-center space-x-2">
-                                <flux:button class="text-blue-600 hover:text-blue-900" wire:click="edit({{ $item->id }})" size="xs">
+                                <flux:button class="text-blue-600 hover:text-blue-900" wire:click="openEditModal({{ $item->id }})" size="xs">
                                     Edit
-                                </flux:button>
-                                <flux:button class="text-red-600 hover:text-red-900" wire:click="confirmDelete({{ $item->id }})" size="xs">
-                                    Delete
                                 </flux:button>
                             </div>
                         </td>
@@ -102,7 +117,7 @@
         <div class="fixed inset-0 z-50 overflow-y-auto">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <div class="fixed inset-0 transition-opacity">
-                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                    <div class="absolute inset-0 opacity-75"></div>
                 </div>
 
                 <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
@@ -112,42 +127,22 @@
                         </h3>
 
                         <div class="space-y-4">
-                            {{-- Autocomplete Input for Book --}}
-                            <div class="relative" @click.away="showBookDropdown = false"> {{-- Tambahkan @click.away --}}
-                                <flux:input
-                                    type="text"
-                                    label="Nama Buku"
-                                    wire:model.debounce.300ms="selectedBookName"
-                                    id="book_name_input"
-                                    placeholder="Cari buku..."
-                                    wire:keydown.escape="showBookDropdown = false"
-                                    wire:keydown.tab="showBookDropdown = false"
-                                    @focus="showBookDropdown = (@json(count($searchResults)) > 0)" {{-- Tampilkan dropdown jika ada hasil --}}
-                                />
-                                {{-- Hidden input to store book_id --}}
-                                <input type="hidden" wire:model="fields.book_id">
-                                @error('fields.book_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-
-                                @if(count($searchResults) > 0)
-                                    <ul x-show="showBookDropdown"
-                                        x-transition:enter="transition ease-out duration-100"
-                                        x-transition:enter-start="opacity-0 transform scale-95"
-                                        x-transition:enter-end="opacity-100 transform scale-100"
-                                        x-transition:leave="transition ease-in duration-75"
-                                        x-transition:leave-start="opacity-100 transform scale-100"
-                                        x-transition:leave-end="opacity-0 transform scale-95"
-                                        class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
-                                        @foreach($searchResults as $book)
-                                            <li
-                                                class="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                                                wire:click="selectBook({{ $book['id'] }}, '{{ $book['name'] }}')"
-                                                wire:key="book-{{ $book['id'] }}"
-                                            >
-                                                {{ $book['name'] }}
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @endif
+                             <div>
+                                <label for="category_id" class=" text-sm font-medium text-gray-700">Category</label>
+                                <select 
+                                    wire:model="fields.book_id" 
+                                    id="book_id"
+                                    class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-700 bg-white"
+                                >
+                                    <option value="">Select Book</option>
+                                    @foreach($books as $book)
+                                        <option value="{{ $book->id }}">{{ $book->name }}</option>
+                                    @endforeach
+                                </select>
+                                
+                                @error('fields.book_id')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             {{-- Other fields for discount --}}
@@ -162,13 +157,6 @@
                             <div>
                                 <flux:input type="date" label="Tanggal Selesai" wire:model="fields.end_date" id="end_date"/>
                                 @error('fields.end_date') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                            </div>
-                            <div class="flex items-center">
-                                <input type="checkbox" wire:model="fields.is_active" id="is_active" class="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out">
-                                <label for="is_active" class="ml-2 block text-sm text-gray-900">
-                                    Aktif
-                                </label>
-                                @error('fields.is_active') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                             </div>
                         </div>
                     </div>

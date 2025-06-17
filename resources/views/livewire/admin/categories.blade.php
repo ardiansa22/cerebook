@@ -3,13 +3,33 @@
 <div>
 @include('layouts.component.swalert')
 @include('layouts.component.confirmdelete')
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-semibold">Categories</h2>
-        <div class="flex space-x-4">
-            @include('layouts.component.createdel ')
-            <flux:button variant="danger" size="xs" wire:click="toggleStatus">Aktif/nonaktif ({{ count($selectedIds) }})</flux:button>
+   <div class="mb-6">
+    <!-- Judul halaman dan aksi -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+        <div>
+            <h2 class="text-2xl font-semibold text-gray-800">Categories</h2>
+
+            <!-- Breadcrumb dengan jarak -->
+            <div class="mt-2">
+                @include('layouts.component.breadcrumb', [
+                    'breadcrumbs' => [
+                        ['label' => 'Dashboard', 'url' => route('dashboard')],
+                        ['label' => 'Categori']
+                    ]
+                ])
+            </div>
+        </div>
+
+        <!-- Tombol aksi -->
+        <div class="flex space-x-2">
+            @include('layouts.component.createdel')
+            <flux:button variant="danger" size="xs" wire:click="toggleStatus">
+                Aktif/nonaktif ({{ count($selectedIds) }})
+            </flux:button>
         </div>
     </div>
+</div>
+
 
     <div class="mb-4">
        @include('layouts.component.searchtable')
@@ -34,6 +54,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category Name</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -53,8 +74,14 @@
                                 class="px-2 py-1 rounded text-white text-sm {{ $category->is_active ? 'bg-green-500' : 'bg-red-500' }}">
                                 {{ $category->is_active ? 'Aktif' : 'Nonaktif' }}
                             </flux:badge>
+                        </td>
+                        <td class="px-6 py-4">
+                            <flux:button class="text-blue-600 hover:text-blue-900" wire:click="openEditModal({{ $category->id }})" size="xs">
+                                    Edit
+                                </flux:button>
 
                         </td>
+                        
                     </tr>
                 @empty
                     <tr>
@@ -71,7 +98,7 @@
         <div class="fixed inset-0 z-50 overflow-y-auto">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <div class="fixed inset-0 transition-opacity">
-                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                    <div class="absolute inset-0 opacity-75"></div>
                 </div>
 
                 <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">

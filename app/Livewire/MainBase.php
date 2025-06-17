@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\BookGenreCustom;
 use App\Models\Category;
+use App\Models\Rental;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -41,6 +42,8 @@ abstract class MainBase extends Component
     public $image;
     public $oldImage;
     public $uploadDirectory = '';
+
+    public $selectedRental = null;
 
     // Reset pagination when search changes
     public function updatingSearch()
@@ -332,6 +335,13 @@ public function update($id)
         $this->selectAll = false;
     }
 }
+public function openDetailModal($id)
+{
+    $this->selectedRental = Rental::with(['user', 'items.book', 'fine'])->findOrFail($id);
+    $this->modalTitle = 'Detail Pengembalian';
+    $this->showModal = true;
+}
+
 
     
 }

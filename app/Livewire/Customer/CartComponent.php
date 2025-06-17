@@ -89,8 +89,8 @@ class CartComponent extends MainBase
                     return;
                 }
 
-                $rentalDays = Carbon::parse($item->rental_date)->diffInDays($item->return_date) + 1;
-                $totalPrice = $rentalDays * $item->book->price * $item->quantity;
+                $rentalDays = Carbon::parse($item->rental_date)->diffInDays($item->return_date) ;
+                $totalPrice = $rentalDays * $item->book->final_price * $item->quantity;
 
                 $rental = Rental::create([
                     'user_id' => $item->user_id,

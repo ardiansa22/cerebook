@@ -13,6 +13,7 @@ use App\Livewire\Admin\Mybook;
 use App\Livewire\Admin\Product;
 use App\Livewire\Admin\ProductCategory;
 use App\Livewire\Admin\Returns;
+use App\Livewire\Admin\Users;
 use App\Livewire\Customer\CartComponent;
 use App\Livewire\Customer\ExploreBook;
 use App\Livewire\Customer\Index;
@@ -47,6 +48,7 @@ Route::middleware(['auth', 'role:admin', 'verified'])->group(function () {
     Route::get('loan', Loan::class)->name('admin.loan');
     Route::get('return', Returns::class)->name('admin.return');
     Route::get('discount', Discounts::class)->name('admin.discount');
+    Route::get('user', Users::class)->name('admin.user');
 });
 
 require __DIR__.'/auth.php';

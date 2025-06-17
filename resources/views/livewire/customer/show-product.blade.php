@@ -87,7 +87,7 @@
                 $end = Carbon::parse($return_date);
                 $days = $start->diffInDays($end) > 0 ? $start->diffInDays($end) : 1;
 
-                $subtotal = $book->final_priceprice * $quantity * $days;
+                $subtotal = $book->final_price * $quantity * $days;
             @endphp
 
 

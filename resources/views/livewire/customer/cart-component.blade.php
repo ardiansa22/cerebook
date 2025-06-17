@@ -10,8 +10,8 @@
             @foreach ($cartItems as $item)
                 @php
                     $days = \Carbon\Carbon::parse($item->rental_date)
-                        ->diffInDays(\Carbon\Carbon::parse($item->return_date)) + 1;
-                    $subtotal = $item->book->price * $item->quantity * $days;
+                        ->diffInDays(\Carbon\Carbon::parse($item->return_date));
+                    $subtotal = $item->book->final_price * $item->quantity * $days;
                     if(in_array($item->id, $selectedItems)) {
                         $grandTotal += $subtotal;
                     }
@@ -38,7 +38,7 @@
                                     <div class="ms-3">
                                         <h6 class="mb-1">{{ $item->book->title }}</h6>
                                         <p class="mb-0 text-muted small">
-                                            {{ $item->quantity }} × Rp{{ number_format($item->book->price, 0, ',', '.') }} × {{ $days }} hari
+                                            {{ $item->quantity }} × Rp{{ number_format($item->book->final_price, 0, ',', '.') }} × {{ $days }} hari
                                         </p>
                                         <small class="text-muted">
                                             {{ \Carbon\Carbon::parse($item->rental_date)->format('d M Y') }} - 
@@ -105,11 +105,11 @@
                     @foreach ($cartItems as $item)
                         @if(in_array($item->id, $selectedItems))
                             @php
-                                $days = \Carbon\Carbon::parse($item->rental_date)->diffInDays(\Carbon\Carbon::parse($item->return_date)) + 1;
-                                $subtotal = $item->book->price * $item->quantity * $days;
+                                $days = \Carbon\Carbon::parse($item->rental_date)->diffInDays(\Carbon\Carbon::parse($item->return_date));
+                                $subtotal = $item->book->final_price * $item->quantity * $days;
                             @endphp
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ $item->book->title }} ({{ $item->quantity }}× Rp{{ number_format($item->book->price, 0, ',', '.') }} × {{ $days }} hari)
+                                {{ $item->book->title }} ({{ $item->quantity }}× Rp{{ number_format($item->book->final_price, 0, ',', '.') }} × {{ $days }} hari)
                                 <span class="fw-semibold">Rp{{ number_format($subtotal, 0, ',', '.') }}</span>
                             </li>
                         @endif

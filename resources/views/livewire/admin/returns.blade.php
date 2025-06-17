@@ -2,7 +2,24 @@
 <div>
 @include('layouts.component.swalert')
 @include('layouts.component.confirmdelete ')
+<div class="mb-6">
+    <!-- Judul halaman dan aksi -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+            <div>
+                <h2 class="text-2xl font-semibold text-gray-800">Pengembalian Buku</h2>
 
+                <!-- Breadcrumb dengan jarak -->
+                <div class="mt-2">
+                    @include('layouts.component.breadcrumb', [
+                        'breadcrumbs' => [
+                            ['label' => 'Dashboard', 'url' => route('dashboard')],
+                            ['label' => 'Data Pengembalian Buku']
+                        ]
+                    ])
+                </div>
+            </div>
+        </div>
+    </div>
   <div class="mb-4">
         <!-- @include('layouts.component.searchtable') -->
         <label class="text-sm text-gray-700">
@@ -24,12 +41,9 @@
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Transaksi</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Peminjam</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Buku</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Peminjaman</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Pengembalian</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktual Tanggal Pengembalian</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Terlambat (Hari)</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Denda</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                 </tr>
             </thead>
@@ -52,9 +66,7 @@
                                     @endforeach
                       
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {{ $return->rental_date->format('d-m-Y') }}
-                        </td>
+
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             {{ $return->return_date->format('d-m-Y') }}
                         </td>
@@ -83,34 +95,12 @@
                                     <flux:badge color="gray">{{ ucfirst($loan->status) }}</flux:badge>
                             @endswitch
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                           @php
-                                $daysLate = 0;
-                                // Pastikan kedua tanggal ada sebelum melakukan perbandingan
-                                if ($return->actual_return_date && $return->return_date) {
-                                    if ($return->actual_return_date->gt($return->return_date)) {
-                                        $daysLate = $return->actual_return_date->diffInDays($return->return_date);
-                                    }
-                                }
-                            @endphp
-                            {{ $daysLate }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            @if ($return->fine)
-                                Rp {{ number_format($return->fine->fine_amount, 0, ',', '.') }}
-                            @else
-                                Rp 0 
-                            @endif
-                        </td>
 
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        @if($return->status === 'rented')
-                            <button wire:click="openReturnModal({{ $loan->id }})" class="bg-green-600 hover:bg-green-700 px-2 py-1 text-white rounded">
-                                Kembalikan
-                            </button>
-                        @else
-                            <span class="text-gray-500">Selesai</span>
-                        @endif
+                            <flux:button class="text-blue-600 hover:text-blue-900" wire:click="openDetailModal({{ $return->id }})" size="xs">
+                                Lihat Detail
+                            </flux:button>
+
                         </td>
                     </tr>
                 @endforeach
@@ -121,38 +111,72 @@
         {{ $returnedRentals ->links() }}
     </div>
     @if($showModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+    <div class="fixed inset-0 z-50 overflow-y-auto bg-opacity-50">
+        <div class="flex items-center justify-center min-h-screen px-4 py-8">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl">
+                <div class="border-b px-6 py-4">
+                    <h3 class="text-xl font-semibold text-gray-800">{{ $modalTitle }}</h3>
                 </div>
 
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-                            {{ $modalTitle }}
-                        </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 px-6 py-4">
+                    <div>
+                        <flux:input type="text" label="Nama Peminjam" :disabled="true"
+                            value="{{ $selectedRental?->user->name }}" />
+                    </div>
 
-                        <div class="space-y-4">
-                            <div>
-                                    <flux:input type="email" label="Genre" wire:model="fields.name"
-                                    id="name"/>
-                            </div>
-                        </div>
+                    <div>
+                        <flux:input type="text" label="Buku yang Dipinjam" :disabled="true"
+                            value="{{ $selectedRental?->items->pluck('book.title')->join(', ') }}" />
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                       <div class="flex space-x-4 sm:space-x-reverse">
-                            <flux:button wire:click="$set('showModal', false)" variant="filled">
-                                Cancel
-                            </flux:button>
-                            <flux:button wire:click.prevent="save" variant="primary">
-                                Save
-                            </flux:button>
-                        </div>
+
+                    <div>
+                        <flux:input type="text" label="Tanggal Pengembalian" :disabled="true"
+                            value="{{ optional($selectedRental?->return_date)->format('d-m-Y') }}" />
                     </div>
+
+                    <div>
+                        <flux:input type="text" label="Tanggal Dikembalikan" :disabled="true"
+                            value="{{ optional($selectedRental?->actual_return_date)->format('d-m-Y') }}" />
+                    </div>
+
+                    <div>
+                        <flux:input type="text" label="Status" :disabled="true"
+                            value="{{ ucfirst($selectedRental?->status) }}" />
+                    </div>
+
+                    <div>
+                        <flux:input type="text" label="Terlambat (hari)" :disabled="true"
+                            value="{{ $selectedRental && $selectedRental->actual_return_date > $selectedRental->return_date ? $selectedRental->actual_return_date->diffInDays($selectedRental->return_date) : 0 }}" />
+                    </div>
+
+                    <div>
+                        <flux:input type="text" label="Denda" :disabled="true"
+                            value="Rp {{ number_format($selectedRental?->fine->fine_amount ?? 0, 0, ',', '.') }}" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Bukti Pengembalian</label>
+                        @if ($selectedRental?->return_evidence)
+                            <a href="{{ asset('storage/' . $selectedRental->return_evidence) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $selectedRental->return_evidence) }}"
+                                    alt="Bukti Pengembalian"
+                                    class="w-full max-w-xs h-auto object-cover rounded border">
+                            </a>
+                        @else
+                            <p class="text-gray-400 italic">Tidak ada bukti</p>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 px-6 py-4 text-right">
+                    <flux:button wire:click="$set('showModal', false)" variant="filled" class="text-blue-600 hover:text-blue-900">
+                        Tutup
+                    </flux:button>
                 </div>
             </div>
         </div>
-    @endif
+    </div>
+@endif
+
 </div>
 </div>
