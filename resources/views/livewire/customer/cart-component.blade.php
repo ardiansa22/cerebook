@@ -90,66 +90,75 @@
                 <button 
                     type="button"
                     class="btn btn-success w-100"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#checkoutModal"
+                    wire:click="OpenRentalModal"
+                    wire:loading.attr="disabled"
                     @if(empty($selectedItems)) disabled @endif
                 >
-                    Checkout Sekarang
+                    <span wire:loading.remove>Checkout Sekarang</span>
+                    <span wire:loading>
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        Memproses...
+                    </span>
                 </button>
             </div>
         </div>
         <!-- Modal Konfirmasi Checkout -->
-        <div wire:ignore.self class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
+       @if ($showRentalModal)
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5); z-index:1050;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="checkoutModalLabel">Konfirmasi Checkout</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                <h5 class="modal-title">Konfirmasi Penyewaan</h5>
+                <button type="button" class="btn-close" wire:click="$set('showRentalModal', false)"></button>
             </div>
             <div class="modal-body">
-                <h6>Detail Produk:</h6>
-                <ul class="list-group mb-3">
-                    @foreach ($cartItems as $item)
-                        @if(in_array($item->id, $selectedItems))
-                            @php
-                                $days = \Carbon\Carbon::parse($item->rental_date)->diffInDays(\Carbon\Carbon::parse($item->return_date));
-                                $subtotal = $item->book->final_price * $item->quantity * $days;
-                            @endphp
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ $item->book->title }} ({{ $item->quantity }}× Rp{{ number_format($item->book->final_price, 0, ',', '.') }} × {{ $days }} hari)
-                                <span class="fw-semibold">Rp{{ number_format($subtotal, 0, ',', '.') }}</span>
-                            </li>
-                        @endif
-                    @endforeach
-                </ul>
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                @foreach($cartItems->whereIn('id', $selectedItems) as $item)
+                <div class="mb-3 border-bottom pb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <img src="{{ asset('storage/books/' . $item->book->image) }}" 
+                             width="50" height="50" 
+                             class="rounded me-2" 
+                             style="object-fit: cover;">
+                        <h6 class="mb-0">{{ $item->book->title }}</h6>
+                    </div>
+                    <div class="row small text-muted">
+                        <div class="col-6">Sewa</div>
+                        <div class="col-6 text-end">{{ \Carbon\Carbon::parse($item->rental_date)->format('d M Y') }}</div>
+                        
+                        <div class="col-6">Kembali</div>
+                        <div class="col-6 text-end">{{ \Carbon\Carbon::parse($item->return_date)->format('d M Y') }}</div>
+                        
+                        @php
+                            $days = \Carbon\Carbon::parse($item->rental_date)->diffInDays($item->return_date);
+                            $subtotal = $item->book->final_price * $item->quantity * $days;
+                        @endphp
+                        
+                        <div class="col-6">Subtotal</div>
+                        <div class="col-6 text-end">Rp{{ number_format($subtotal, 0, ',', '.') }}</div>
+                    </div>
+                </div>
+                @endforeach
+                
+                <div class="d-flex justify-content-between align-items-center mt-3">
                     <span class="fw-semibold">Total Pembayaran:</span>
                     <span class="fw-bold fs-5">Rp{{ number_format($grandTotal, 0, ',', '.') }}</span>
                 </div>
-                <div class="mb-3">
-                    <label for="modalPaymentMethod" class="form-label">Metode Pembayaran</label>
-                    <select 
-                        id="modalPaymentMethod" 
-                        wire:model="paymentMethod" 
-                        class="form-select"
-                    >
-                        <option value="">Pilih Metode Pembayaran</option>
-                        <option value="transfer">Transfer Bank</option>
-                        <option value="cash">Tunai</option>
-                        <option value="ewallet">E-Wallet</option>
-                    </select>
-                    @error('paymentMethod')
-                        <div class="text-danger small mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
             </div>
+
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button wire:click="checkout" class="btn btn-success">Konfirmasi & Checkout</button>
-            </div>
+                <button type="button" class="btn btn-secondary" wire:click="$set('showRentalModal', false)">Batal</button>
+                <button type="button" class="btn btn-primary" wire:click="checkout" wire:loading.attr="disabled">
+                    <span wire:loading.remove>Konfirmasi</span>
+                    <span wire:loading>
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        Memproses...
+                    </span>
+                </button>
             </div>
         </div>
-        </div>
+    </div>
+</div>
+@endif
     @endif
     @if (session()->has('message'))
         <div class="alert alert-success mt-3">

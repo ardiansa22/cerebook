@@ -19,22 +19,41 @@ class CartComponent extends MainBase
     public $quantity = 1;
     public $rental_date;
     public $return_date;
-    public $paymentMethod; // Tambahkan ini
-    public $selectedItems = []; // untuk menyimpan ID cart yang dipilih user
+    public $paymentMethod = 'transfer'; // Set default value
+    public $selectedItems = [];
     public $quantities = [];
     public $cartItems = [];
+    public $showRentalModal = false;
+    public $totalPrice = 0; // Add total price property
 
+    public function mount()
+    {
+        $this->cartItems = Cart::with(['book' => function ($query) {
+            $query->select('id', 'title', 'image');
+        }])->where('user_id', Auth::id())->get();
 
-public function mount()
-{
-    $this->cartItems = Cart::with(['book' => function ($query) {
-        $query->select('id', 'title', 'image'); // Ambil hanya kolom yang diperlukan
-    }])->where('user_id', Auth::id())->get();
+        $this->quantities = $this->cartItems->pluck('quantity', 'id')->toArray();
+        $this->calculateTotalPrice(); // Calculate initial total price
+    }
 
-    // Inisialisasi quantities
-    $this->quantities = $this->cartItems->pluck('quantity', 'id')->toArray();
-}
+    public function calculateTotalPrice()
+    {
+        $this->totalPrice = 0;
+        $items = Cart::whereIn('id', $this->selectedItems)
+            ->where('user_id', Auth::id())
+            ->with('book')
+            ->get();
 
+        foreach ($items as $item) {
+            $days = Carbon::parse($item->rental_date)->diffInDays($item->return_date) + 1;
+            $this->totalPrice += $item->book->final_price * $item->quantity * $days;
+        }
+    }
+
+    public function updatedSelectedItems()
+    {
+        $this->calculateTotalPrice();
+    }
 
     public function updateQuantity($itemId, $newQuantity)
     {
@@ -42,11 +61,11 @@ public function mount()
         if ($item && $newQuantity > 0) {
             $item->quantity = $newQuantity;
             $item->save();
-            $this->mount(); // agar keranjang diperbarui di tampilan
+            $this->mount();
+            $this->calculateTotalPrice();
             session()->flash('message', 'Jumlah berhasil diperbarui.');
         }
     }
-
 
     public function addToCart()
     {
@@ -68,6 +87,28 @@ public function mount()
         $this->reset(['book_id', 'quantity', 'rental_date', 'return_date']);
         session()->flash('message', 'Buku ditambahkan ke keranjang.');
     }
+
+    public function OpenRentalModal()
+    {
+        if (empty($this->selectedItems)) {
+            session()->flash('error', 'Pilih minimal satu item untuk checkout.');
+            return;
+        }
+        
+        $items = Cart::whereIn('id', $this->selectedItems)
+            ->where('user_id', Auth::id())
+            ->with('book')
+            ->get();
+            
+        foreach ($items as $item) {
+            if ($item->quantity > $item->book->stock) {
+                session()->flash('error', 'Stok buku "' . $item->book->title . '" tidak mencukupi.');
+                return;
+            }
+        }
+        
+        $this->showRentalModal = true;
+    }
         
     public function checkout()
     {
@@ -83,7 +124,10 @@ public function mount()
 
         DB::beginTransaction();
 
-        try {
+     
+            $rentals = [];
+            $totalAmount = 0;
+
             foreach ($items as $item) {
                 if ($item->quantity > $item->book->stock) {
                     session()->flash('error', 'Stok buku "' . $item->book->title . '" tidak mencukupi.');
@@ -91,8 +135,9 @@ public function mount()
                     return;
                 }
 
-                $rentalDays = Carbon::parse($item->rental_date)->diffInDays($item->return_date) ;
+                $rentalDays = Carbon::parse($item->rental_date)->diffInDays($item->return_date);
                 $totalPrice = $rentalDays * $item->book->final_price * $item->quantity;
+                $totalAmount += $totalPrice;
 
                 $rental = Rental::create([
                     'user_id' => $item->user_id,
@@ -110,67 +155,85 @@ public function mount()
                     'sub_total' => $totalPrice,
                 ]);
 
-                Payment::create([
-                    'rental_id' => $rental->id,
-                    'payment_date' => now(),
-                    'amount' => $totalPrice,
-                    'method' => $this->paymentMethod,
-                    'status' => 'paid',
-                ]);
-
-                $item->book->decrement('stock', $item->quantity);
+                $rentals[] = $rental;
             }
 
-            // Hapus hanya item yang di-checkout
+            // Create single payment for all rentals
+            $payment = Payment::create([
+                'rental_id' => $rental->id,
+                'payment_date' => now(),
+                'amount' => $totalAmount,
+                'method' => $this->paymentMethod,
+                'status' => 'pending',
+            ]);
+
+
+
+            // Midtrans integration
+            \Midtrans\Config::$serverKey = config('midtrans.server_key');
+            \Midtrans\Config::$isProduction = false;
+            \Midtrans\Config::$isSanitized = true;
+            \Midtrans\Config::$is3ds = true;
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => 'CART-' . $payment->id . '-' . time(),
+                    'gross_amount' => $totalAmount,
+                ],
+                'customer_details' => [
+                    'first_name' => Auth::user()?->name ?? 'Guest',
+                    'email' => Auth::user()?->email ?? 'guest@example.com',
+                    'phone' => Auth::user()?->phone ?? '0811111111',
+                ],
+            ];
+
+            $snapToken = \Midtrans\Snap::getSnapToken($params);
+            
+            // Update payment with snap token
+            $payment->update([
+                'snap_token' => $snapToken
+            ]);
+
+            // Delete cart items only after successful payment creation
             Cart::whereIn('id', $this->selectedItems)->delete();
             
+            $this->showRentalModal = false;
+            $this->selectedItems = [];
 
             DB::commit();
 
-            $this->selectedItems = [];
-             $this->dispatch('checkout-success'); // 👈 Kirim event ke frontend
-            session()->flash('message', 'Checkout berhasil.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            session()->flash('error', 'Gagal checkout: ' . $e->getMessage());
-        }
+            $this->dispatch('midtrans:pay', [
+                'snapToken' => $snapToken
+            ]);
+
     }
 
     public function getTotalSelectedPriceProperty()
     {
-        $items = Cart::whereIn('id', $this->selectedItems)->with('book')->get();
-        $total = 0;
+        return $this->totalPrice;
+    }
 
-        foreach ($items as $item) {
-            $days = Carbon::parse($item->rental_date)->diffInDays($item->return_date) + 1;
-            $total += $item->book->price * $item->quantity * $days;
+    public function removeFromCart($id)
+    {
+        try {
+            $cartItem = Cart::findOrFail($id);
+            $cartItem->delete();
+
+            $this->cartItems = $this->cartItems->reject(fn ($item) => $item->id == $id);
+            $this->selectedItems = array_diff($this->selectedItems, [$id]);
+            $this->calculateTotalPrice();
+
+            $this->dispatch('cart-updated');
+            session()->flash('message', 'Item berhasil dihapus.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Gagal menghapus item: ' . $e->getMessage());
         }
-
-        return $total;
     }
 
-
-public function removeFromCart($id)
-{
-    try {
-        $cartItem = Cart::findOrFail($id);
-        $cartItem->delete();
-
-        // Perbarui data tanpa query ulang
-        $this->cartItems = $this->cartItems->reject(fn ($item) => $item->id == $id);
-        $this->selectedItems = array_diff($this->selectedItems, [$id]);
-
-        $this->dispatch('cart-updated'); // Event untuk notifikasi (opsional)
-        session()->flash('message', 'Item berhasil dihapus.');
-    } catch (\Exception $e) {
-        session()->flash('error', 'Gagal menghapus item: ' . $e->getMessage());
+    public function render()
+    {
+        return view('livewire.customer.cart-component', [
+            'cartItems' => $this->cartItems,
+        ])->layout('layouts.app');
     }
-}
-public function render()
-{
-    // Gunakan $this->cartItems yang sudah di-mount
-    return view('livewire.customer.cart-component', [
-        'cartItems' => $this->cartItems,
-    ])->layout('layouts.app');
-}
 }

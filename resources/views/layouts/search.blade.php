@@ -25,7 +25,7 @@
                     <i class="fa-solid fa-cart-shopping me-2"></i>Keranjang
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear me-2"></i>Pengaturan</a></li>
+                    <li><a class="dropdown-item" href="/my-books"><i class="fa-solid fa-gear me-2"></i>My Books</a></li>
                     <li><a class="dropdown-item" href="/keranjang" wire:navigate><i class="fa-solid fa-book me-2"></i>Keranjang Saya</a></li>
                     <li>
                         <form method="POST" action="{{ route('logout') }}">
