@@ -18,7 +18,7 @@
                         $grandTotal += $subtotal;
                     }
                 @endphp
-                <div class="card shadow-sm mb-3  wire:key="cart-item-{{ $item->id }}">
+                <div class="card shadow-sm mb-3" wire:key="cart-item-{{ $item->id }}">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="d-flex">
@@ -65,7 +65,7 @@
                                     wire:target="removeFromCart({{ $item->id }})"
                                     class="btn btn-sm btn-outline-danger"
                                 >
-                                    <span wire:loading.remove wire:target="removeFromCart({{ $item->id }})">🗑️ Hapus</span>
+                                    <span wire:loading.remove wire:target="removeFromCart({{ $item->id }})">Hapus</span>
                                     <span wire:loading wire:target="removeFromCart({{ $item->id }})">
                                         <span class="spinner-border spinner-border-sm" role="status"></span>
                                     </span>

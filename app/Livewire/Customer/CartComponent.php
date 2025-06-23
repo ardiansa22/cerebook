@@ -63,35 +63,22 @@ class CartComponent extends MainBase
             $item->save();
             $this->mount();
             $this->calculateTotalPrice();
-            session()->flash('message', 'Jumlah berhasil diperbarui.');
+            $this->dispatch('swal:success', [
+            'icon' => 'success',
+            'title' => 'Berhasil!',
+            'text' => 'Jumlah Berhasil diperbaharui',
+        ]);
         }
-    }
-
-    public function addToCart()
-    {
-        $this->validate([
-            'book_id' => 'required|exists:books,id',
-            'quantity' => 'required|integer|min:1',
-            'rental_date' => 'required|date',
-            'return_date' => 'required|date|after_or_equal:rental_date',
-        ]);
-
-        Cart::create([
-            'user_id' => Auth::id(),
-            'book_id' => $this->book_id,
-            'quantity' => $this->quantity,
-            'rental_date' => $this->rental_date,
-            'return_date' => $this->return_date,
-        ]);
-
-        $this->reset(['book_id', 'quantity', 'rental_date', 'return_date']);
-        session()->flash('message', 'Buku ditambahkan ke keranjang.');
     }
 
     public function OpenRentalModal()
     {
         if (empty($this->selectedItems)) {
-            session()->flash('error', 'Pilih minimal satu item untuk checkout.');
+            $this->dispatch('swal:success', [
+            'icon' => 'success',
+            'title' => 'Error!',
+            'text' => 'Pilih minimal satu item untuk dipilih',
+        ]);
             return;
         }
         
@@ -102,7 +89,12 @@ class CartComponent extends MainBase
             
         foreach ($items as $item) {
             if ($item->quantity > $item->book->stock) {
-                session()->flash('error', 'Stok buku "' . $item->book->title . '" tidak mencukupi.');
+                $this->dispatch('swal:success', [
+                'icon' => 'success',
+                'title' => 'Error!',
+                'text' => 'Stok Buku tidak mencukupi',
+        ]);
+                
                 return;
             }
         }
@@ -205,6 +197,11 @@ class CartComponent extends MainBase
             $this->dispatch('midtrans:pay', [
                 'snapToken' => $snapToken
             ]);
+            $this->dispatch('swal:success', [
+            'icon' => 'success',
+            'title' => 'Berhasil!',
+            'text' => 'Buku berhasil disewa',
+        ]);
 
     }
 
@@ -215,7 +212,7 @@ class CartComponent extends MainBase
 
     public function removeFromCart($id)
     {
-        try {
+
             $cartItem = Cart::findOrFail($id);
             $cartItem->delete();
 
@@ -223,11 +220,11 @@ class CartComponent extends MainBase
             $this->selectedItems = array_diff($this->selectedItems, [$id]);
             $this->calculateTotalPrice();
 
-            $this->dispatch('cart-updated');
-            session()->flash('message', 'Item berhasil dihapus.');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Gagal menghapus item: ' . $e->getMessage());
-        }
+            $this->dispatch('cart-updated');        $this->dispatch('swal:success', [
+            'icon' => 'success',
+            'title' => 'Berhasil!',
+            'text' => 'Buku berhasil dihapus',
+        ]);
     }
 
     public function render()
