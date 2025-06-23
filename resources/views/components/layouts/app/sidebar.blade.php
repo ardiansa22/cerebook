@@ -6,7 +6,9 @@
     </head>
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
-    <flux:sidebar sticky stashable class="bg-zinc-50 dark:bg-zinc-900 border-r rtl:border-r-0 rtl:border-l border-zinc-200 dark:border-zinc-700">
+    <flux:sidebar sticky stashable 
+    class="bg-green-200 dark:bg-green-900 border-r rtl:border-r-0 rtl:border-l border-green-300 dark:border-green-800">
+
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
         <flux:brand href="#" logo="https://matapangandaran.my.id/images/logo.png" name="CereBook." class="px-2 dark:hidden" />

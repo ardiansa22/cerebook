@@ -1,5 +1,7 @@
 <div class="container mt-3">
     @include('layouts.search')
+    @livewire('customer.breadcrumb-component')
+
     @if($cartItems->isEmpty())
         <div class="alert alert-info mt-3   ">Keranjang Anda kosong</div>
     @else
@@ -16,7 +18,7 @@
                         $grandTotal += $subtotal;
                     }
                 @endphp
-                <div class="card shadow-sm mb-3">
+                <div class="card shadow-sm mb-3  wire:key="cart-item-{{ $item->id }}">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="d-flex">
@@ -56,12 +58,17 @@
                                 </div>
                             </div>
                             <div>
-                                <button 
+                               <button 
                                     wire:click="removeFromCart({{ $item->id }})"
                                     wire:confirm="Apakah Anda yakin ingin menghapus item ini?"
+                                    wire:loading.attr="disabled"
+                                    wire:target="removeFromCart({{ $item->id }})"
                                     class="btn btn-sm btn-outline-danger"
                                 >
-                                    d
+                                    <span wire:loading.remove wire:target="removeFromCart({{ $item->id }})">🗑️ Hapus</span>
+                                    <span wire:loading wire:target="removeFromCart({{ $item->id }})">
+                                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                                    </span>
                                 </button>
                             </div>
                         </div>

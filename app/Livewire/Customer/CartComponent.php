@@ -25,13 +25,15 @@ class CartComponent extends MainBase
     public $cartItems = [];
 
 
-   public function mount()
-    {
-        $this->cartItems = Cart::with('book')->where('user_id', Auth::id())->get();
-        foreach ($this->cartItems as $item) {
-            $this->quantities[$item->id] = $item->quantity;
-        }
-    }
+public function mount()
+{
+    $this->cartItems = Cart::with(['book' => function ($query) {
+        $query->select('id', 'title', 'image'); // Ambil hanya kolom yang diperlukan
+    }])->where('user_id', Auth::id())->get();
+
+    // Inisialisasi quantities
+    $this->quantities = $this->cartItems->pluck('quantity', 'id')->toArray();
+}
 
 
     public function updateQuantity($itemId, $newQuantity)
@@ -126,6 +128,7 @@ class CartComponent extends MainBase
             DB::commit();
 
             $this->selectedItems = [];
+             $this->dispatch('checkout-success'); // 👈 Kirim event ke frontend
             session()->flash('message', 'Checkout berhasil.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -147,14 +150,27 @@ class CartComponent extends MainBase
     }
 
 
-    public function removeFromCart($id)
-    {
-        Cart::find($id)?->delete();
+public function removeFromCart($id)
+{
+    try {
+        $cartItem = Cart::findOrFail($id);
+        $cartItem->delete();
+
+        // Perbarui data tanpa query ulang
+        $this->cartItems = $this->cartItems->reject(fn ($item) => $item->id == $id);
+        $this->selectedItems = array_diff($this->selectedItems, [$id]);
+
+        $this->dispatch('cart-updated'); // Event untuk notifikasi (opsional)
+        session()->flash('message', 'Item berhasil dihapus.');
+    } catch (\Exception $e) {
+        session()->flash('error', 'Gagal menghapus item: ' . $e->getMessage());
     }
-    public function render()
-    {
-        return view('livewire.customer.cart-component',[
-            'cartItems' => Cart::with('book')->where('user_id', Auth::id())->get(),
-        ])->layout('layouts.app');
-    }
+}
+public function render()
+{
+    // Gunakan $this->cartItems yang sudah di-mount
+    return view('livewire.customer.cart-component', [
+        'cartItems' => $this->cartItems,
+    ])->layout('layouts.app');
+}
 }

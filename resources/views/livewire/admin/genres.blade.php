@@ -7,7 +7,7 @@
     <!-- Judul halaman dan aksi -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
             <div>
-                <h2 class="text-2xl font-semibold text-gray-800">Categories</h2>
+                <h2 class="text-2xl font-semibold text-gray-800">Genres</h2>
 
                 <!-- Breadcrumb dengan jarak -->
                 <div class="mt-2">
@@ -64,9 +64,12 @@
                             {{ $genre->name }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <flux:button class="text-blue-600 hover:text-blue-900" wire:click="openEditModal({{ $genre->id }})" size="xs">
-                                    Edit
-                                </flux:button>
+                         <flux:button 
+                                class="bg-gradient-to-r from-amber-400 to-yellow-600 text-white px-3 py-1 rounded-md text-xs hover:from-amber-500 hover:to-yellow-500" 
+                                wire:click="openEditModal({{ $genre->id }})" 
+                                size="xs">
+                                Edit
+                            </flux:button>
                         </td>
                     </tr>
                 @endforeach
@@ -93,7 +96,7 @@
                             <div>
                                     <flux:input type="email" label="Genre" wire:model="fields.name"
                                     id="name"/>
-                            </div>\
+                            </div>
                             
                         </div>
                     </div>

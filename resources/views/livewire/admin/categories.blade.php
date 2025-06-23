@@ -23,9 +23,13 @@
         <!-- Tombol aksi -->
         <div class="flex space-x-2">
             @include('layouts.component.createdel')
-            <flux:button variant="danger" size="xs" wire:click="toggleStatus">
+            <flux:button 
+                size="xs" 
+                wire:click="toggleStatus" 
+                class="bg-gradient-to-r from-blue-500 via-green-300 to-green-200 text-white hover:from-blue-600 hover:to-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 Aktif/nonaktif ({{ count($selectedIds) }})
             </flux:button>
+
         </div>
     </div>
 </div>
@@ -71,14 +75,18 @@
                         </td>
                         <td class="px-6 py-4">
                             <flux:badge
-                                class="px-2 py-1 rounded text-white text-sm {{ $category->is_active ? 'bg-green-500' : 'bg-red-500' }}">
+                                class="px-2 py-1 rounded text-white text-sm {{ $category->is_active ? 'bg-gradient-to-r from-green-200 to-green-400' : 'bg-gradient-to-r from-red-400 to-red-600' }}">
                                 {{ $category->is_active ? 'Aktif' : 'Nonaktif' }}
                             </flux:badge>
                         </td>
                         <td class="px-6 py-4">
-                            <flux:button class="text-blue-600 hover:text-blue-900" wire:click="openEditModal({{ $category->id }})" size="xs">
-                                    Edit
-                                </flux:button>
+                            <flux:button 
+                                class="bg-gradient-to-r from-amber-400 to-yellow-600 text-white px-3 py-1 rounded-md text-xs hover:from-amber-500 hover:to-yellow-500" 
+                                wire:click="openEditModal({{ $category->id }})" 
+                                size="xs">
+                                Edit
+                            </flux:button>
+
 
                         </td>
                         
@@ -111,6 +119,7 @@
                             <div>
                                 <flux:input type="email" label="Category" wire:model="fields.name"
                                     id="name"/>
+                                    @error('fields.name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                             </div>
                         </div>
                     </div>

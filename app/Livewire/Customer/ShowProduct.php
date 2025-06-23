@@ -144,6 +144,9 @@ class ShowProduct extends MainBase
             ];
 
             $snapToken = \Midtrans\Snap::getSnapToken($params);
+            Payment::where('rental_id', $rental->id)->update([
+                'snap_token' => $snapToken // tambahkan ini, pastikan kolomnya ada
+            ]);
 
             $this->dispatch('midtrans:pay', [
                 'snapToken' => $snapToken

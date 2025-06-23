@@ -1,10 +1,11 @@
 <nav class="navbar navbar-expand-lg bg-white shadow-sm rounded mt-3 px-3 py-2">
     <div class="container-fluid d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center justify-content-between gap-2">
         
-        {{-- Search Bar --}}
-        <form class="flex-grow-1 w-100">
-            <input class="form-control" type="search" placeholder="Cari Buku Favoritmu" aria-label="Search">
-        </form>
+    <!-- Search Bar -->
+    <div class="flex-grow-1 w-100">
+        @livewire('book-search')
+    </div>
+
 
         {{-- Guest: Show "Masuk" button --}}
         @guest

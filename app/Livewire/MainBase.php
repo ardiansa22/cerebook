@@ -104,23 +104,15 @@ abstract class MainBase extends Component
         }
     }
 
-    // Default validation rules (override this in the child class if needed)
-    protected function getValidationRules()
-    {
-        return [
-            'selectedGenres' => 'required|array|min:1',
-            'selectedGenres.*' => 'exists:genres,id',
-        ];
-    }
+
 
     // Store function
     public function store()
 {
     try {
-        // $this->validate($this->getValidationRules());
+        $this->validate($this->getValidationRules());
         
         $data = $this->fields;
-        // dd($data);
         // Buat record utama
         $record = $this->model::create($data);
 
@@ -155,7 +147,7 @@ public function update($id)
     try {
         $record = $this->model::findOrFail($id);
 
-        // $this->validate($this->getValidationRules());
+        $this->validate($this->getValidationRules());
 
         $data = $this->fields;
 

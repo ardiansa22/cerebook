@@ -18,20 +18,19 @@ use App\Livewire\Customer\CartComponent;
 use App\Livewire\Customer\ExploreBook;
 use App\Livewire\Customer\Index;
 use App\Livewire\Customer\MyBooks;
+use App\Livewire\Customer\ShowBookDetails;
 use App\Livewire\Customer\ShowProduct;
 use App\Models\Cart;
 use App\Models\Discount;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/',Index::class)->name('home');
-
-
-
 Route::middleware(['auth', 'role:customer', 'verified'])->group(function () {
     Route::get('/book/{book}', ShowProduct::class)->name('book.show');
     Route::get('/my-books', MyBooks::class)->name('my-books');
     Route::get('/Explore/{categori:name}', ExploreBook::class)->name('categori.book');
     Route::get('/keranjang', CartComponent::class)->name('keranjang');
+    Route::get('/my-boos/{id}', ShowBookDetails::class)->name('showbook');
 });
 Route::middleware(['auth', 'role:admin', 'verified'])->group(function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');

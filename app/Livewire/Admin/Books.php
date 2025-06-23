@@ -24,8 +24,8 @@ class Books extends MainBase
     public $categories;
 
     // filer
-    public $selectedfilterGenres = [];
-    public $selectedfilterCategories = [];
+    public $selectedfilterGenre = null; // dari array menjadi single value
+    public $selectedfilterCategory = null; // dari array menjadi single value
 
     public $filtercategories = [];
     public $filtergenres = [];
@@ -52,11 +52,27 @@ class Books extends MainBase
         $this->filtercategories = Category::all();
         $this->filtergenres = Genre::all();
     }
-    // Di dalam class Books
+    public function getValidationRules()
+{
+    return [
+        'fields.name' => 'required|string|max:255|unique:books,name,' . $this->editingId,
+        'fields.title' => 'required|string|max:255',
+        'fields.description' => 'nullable|string',
+        'fields.price' => 'required|numeric|min:0',
+        'fields.rent_price' => 'required|numeric|min:0',
+        'fields.fines_price' => 'required|numeric|min:0',
+        'fields.stock' => 'required|integer|min:0',
+        'fields.category_id' => 'required|exists:categories,id',
+        'selectedGenres' => 'required|array|min:1',
+        'selectedGenres.*' => 'exists:genres,id',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', // Optional: jika upload gambar
+    ];
+}
+    // Ubah method resetFilters
     public function resetFilters()
     {
-        $this->reset(['selectedfilterGenres', 'selectedfilterCategories', 'search']);
-        $this->resetPage(); // Reset pagination ke halaman 1
+        $this->reset(['selectedfilterGenre', 'selectedfilterCategory', 'search']);
+        $this->resetPage();
     }
     public function updatedFields($value, $key)
     {
@@ -75,37 +91,37 @@ class Books extends MainBase
 
 
     public function render()
-    {
-        $query = Book::with(['category', 'genres']);
+{
+    $query = Book::with(['category', 'genres']);
 
-        // Filter by categories
-        if (!empty($this->selectedfilterCategories)) {
-            $query->whereIn('category_id', $this->selectedfilterCategories);
-        }
-
-        // Filter by genres
-        if (!empty($this->selectedfilterGenres)) {
-            $query->whereHas('genres', function($q) {
-                $q->whereIn('genres.id', $this->selectedfilterGenres);
-            });
-        }
-
-        // Search
-        if ($this->search) {
-            $query->where(function($q) {
-                foreach ($this->searchableFields as $field) {
-                    $q->orWhere($field, 'like', '%' . $this->search . '%');
-                }
-            });
-        }
-
-        $books = $query->paginate($this->perPage);
-        
-        return view('livewire.admin.book', [
-            'books' => $books,
-            'categories' => $this->categories,
-            'genres' => $this->genres,
-            'bookGenreMap' => BookGenreCustom::all()->keyBy('book_id')
-        ]);
+    // Filter by category (single select)
+    if ($this->selectedfilterCategory) {
+        $query->where('category_id', $this->selectedfilterCategory);
     }
+
+    // Filter by genre (single select)
+    if ($this->selectedfilterGenre) {
+        $query->whereHas('genres', function($q) {
+            $q->where('genres.id', $this->selectedfilterGenre);
+        });
+    }
+
+    // Search
+    if ($this->search) {
+        $query->where(function($q) {
+            foreach ($this->searchableFields as $field) {
+                $q->orWhere($field, 'like', '%' . $this->search . '%');
+            }
+        });
+    }
+
+    $books = $query->paginate($this->perPage);
+    
+    return view('livewire.admin.book', [
+        'books' => $books,
+        'categories' => $this->categories,
+        'genres' => $this->genres,
+        'bookGenreMap' => BookGenreCustom::all()->keyBy('book_id')
+    ]);
+}
 }

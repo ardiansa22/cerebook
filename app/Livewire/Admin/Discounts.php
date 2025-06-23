@@ -26,7 +26,7 @@ class Discounts extends MainBase
     protected function getValidationRules()
     {
         return [
-            'fields.name' => 'required|string|max:255',
+            'fields.start_date' => 'required|string|max:255',
         ];
     }
     public function render()

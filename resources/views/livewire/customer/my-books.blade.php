@@ -1,5 +1,5 @@
 <div class="container mt-3">
-    @include('layouts.search')
+        @livewire('customer.breadcrumb-component')
     
     @if (session()->has('error'))
         <div class="alert alert-danger mt-3">
@@ -26,7 +26,7 @@
                 ];
             @endphp
             
-            <a href="" class="text-decoration-none text-dark">
+            <a href="{{ route('showbook', $rental->id) }}" class="text-decoration-none text-dark">
                 <div class="card sesi-card shadow-sm p-3 mt-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <!-- Gambar Buku -->

@@ -27,7 +27,41 @@
     </div>
 
 
-    <!-- Filter dan Search Section -->
+   
+
+    <!-- Filter Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Category</label>
+        <select wire:model.live="selectedfilterCategory" 
+                class="w-full border rounded-md p-2 text-sm">
+            <option value="">All Categories</option>
+            @foreach($filtercategories as $category)
+                <option value="{{ $category->id }}">{{ $category->name }}</option>
+            @endforeach
+        </select>
+    </div>
+    
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Genre</label>
+        <select wire:model.live="selectedfilterGenre" 
+                class="w-full border rounded-md p-2 text-sm">
+            <option value="">All Genres</option>
+            @foreach($filtergenres as $genre)
+                <option value="{{ $genre->id }}">{{ $genre->name }}</option>
+            @endforeach
+        </select>
+    </div>
+</div>
+
+    <!-- Reset Filter Button -->
+    <div class="mb-6 flex justify-end">
+        <button wire:click="resetFilters" 
+                class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md text-sm font-medium text-gray-700">
+            <i class="fas fa-filter-circle-xmark mr-1"></i> Reset Filters
+        </button>
+    </div>
+     <!-- Filter dan Search Section -->
     <div class="mb-4">
         @include('layouts.component.searchtable')
         <label class="text-sm text-gray-700">
@@ -40,37 +74,6 @@
             </select>
             entries
         </label>
-    </div>
-
-    <!-- Filter Section -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Categories</label>
-            <select wire:model.live="selectedfilterCategories" multiple 
-                    class="w-full border rounded-md p-2 text-sm">
-                @foreach($filtercategories as $category)
-                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                @endforeach
-            </select>
-        </div>
-        
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Genres</label>
-            <select wire:model.live="selectedfilterGenres" multiple 
-                    class="w-full border rounded-md p-2 text-sm">
-                @foreach($filtergenres as $genre)
-                    <option value="{{ $genre->id }}">{{ $genre->name }}</option>
-                @endforeach
-            </select>
-        </div>
-    </div>
-
-    <!-- Reset Filter Button -->
-    <div class="mb-6 flex justify-end">
-        <button wire:click="resetFilters" 
-                class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md text-sm font-medium text-gray-700">
-            <i class="fas fa-filter-circle-xmark mr-1"></i> Reset Filters
-        </button>
     </div>
 
     <!-- Table Section -->
@@ -139,7 +142,10 @@
                             {{ implode(', ', $genreNames) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
-                            <flux:button class="text-blue-600 hover:text-blue-900" wire:click="openEditModal({{ $book->id }})" size="xs">
+                             <flux:button 
+                                class="bg-gradient-to-r from-amber-400 to-yellow-600 text-white px-3 py-1 rounded-md text-xs hover:from-amber-500 hover:to-yellow-500" 
+                                wire:click="openEditModal({{ $book->id }})" 
+                                size="xs">
                                 Edit
                             </flux:button>
                         </td>
@@ -173,7 +179,7 @@
                         <div class="space-y-4">
                             <div>
                                 <flux:input type="text" label="Name" wire:model="fields.name" 
-                                    id="name"/>
+                                    id="name" require   />
                                 @error('fields.name')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -196,29 +202,37 @@
                                 @enderror
                             </div>
                             
+                            {{-- ... bagian lain dari kode Anda ... --}}
+
                             <div>
-                                <flux:input type="number" label="Price Book" wire:model="fields.price" 
-                                    id="price"/>
+                                <flux:input type="number" label="Price Book" wire:model.live="fields.price"
+                                    id="price"/> {{-- Tambahkan .live di sini --}}
                                 @error('fields.price')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-                           
+
                             <div>
-                                <flux:input type="number" label="Rent Price" wire:model="fields.rent_price" id="rent_price" readonly />
+                                {{-- Tambahkan wire:key di sini, gunakan fields.price sebagai bagian dari kunci --}}
+                                <flux:input type="number" label="Rent Price" wire:model="fields.rent_price" id="rent_price" readonly
+                                    wire:key="rent-price-{{ $fields['price'] }}"
+                                />
                                 <p class="mt-1 text-sm text-gray-500">Rent price will be automatically calculated as 35% of the book price.</p>
                                 @error('fields.rent_price')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-                            
+
                             <div>
-                                <flux:input type="number" label="Fines Price" wire:model="fields.fines_price" id="fines_price" readonly />
+                                {{-- Tambahkan wire:key di sini, gunakan fields.price sebagai bagian dari kunci --}}
+                                <flux:input type="number" label="Fines Price" wire:model="fields.fines_price" id="fines_price" readonly
+                                    wire:key="fines-price-{{ $fields['price'] }}"
+                                />
                                 <p class="text-sm text-gray-500 mt-1">Fines will automatically appear when Price Book is filled</p>
                                 @error('fields.fines_price')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                            </div>    
+                            </div>
                             
                             <div>
                                 <flux:input type="number" label="Stock" wire:model="fields.stock" 

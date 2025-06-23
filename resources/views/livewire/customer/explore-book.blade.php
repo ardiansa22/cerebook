@@ -1,6 +1,7 @@
 <div class="container mt-3 detail">
     @include('layouts.search')
     <!-- <h5 class="fw-bold mb-3">Kategori: {{ $categori->name }}</h5> -->
+         @livewire('customer.breadcrumb-component')
     @if ($books->isEmpty())
         <p class="text-muted">Belum ada buku di kategori ini.</p>
     @endif
