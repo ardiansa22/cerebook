@@ -22,16 +22,16 @@
             {{-- Tablet & Up: dropdown --}}
             <div class="dropdown d-none d-md-block">
                 <button class="btn btn-outline-success dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fa-solid fa-cart-shopping me-2"></i>Keranjang
+                    <i class="fa-solid fa-user me-2"></i>more
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="/my-books"><i class="fa-solid fa-gear me-2"></i>My Books</a></li>
-                    <li><a class="dropdown-item" href="/keranjang" wire:navigate><i class="fa-solid fa-book me-2"></i>Keranjang Saya</a></li>
+                    <li><a class="dropdown-item" href="/my-books" wire:navigate><i class="fa-solid fa-book me-2"></i>My Books</a></li>
+                    <li><a class="dropdown-item" href="/keranjang" wire:navigate><i class="fa-solid  fa-cart-shopping me-2"></i>Cart</a></li>
                     <li>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="dropdown-item">
-                                <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Keluar
+                                <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Logout
                             </button>
                         </form>
                     </li>

@@ -2,7 +2,7 @@
     <input
         type="text"
         class="form-control"
-        placeholder="Cari Buku Favoritmu"
+        placeholder="Search Your Favorit Book.."
         wire:model.live.debounce.300ms="query"
     >
     

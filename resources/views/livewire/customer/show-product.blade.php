@@ -96,8 +96,8 @@
                     <button class="btn btn-primary shadow-sm px-4 py-2"
                             wire:click="OpenRentalModal"
                             wire:loading.attr="disabled" type="button">
-                        <span wire:loading.remove>Sewa</span>
-                        <span wire:loading>Memproses...</span>
+                        <span wire:loading.remove>Rent</span>
+                        <span wire:loading>Loading...</span>
                     </button>
                 @else
                     <button class="btn btn-secondary shadow-sm px-4 py-2" disabled type="button">
