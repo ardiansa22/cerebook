@@ -306,3 +306,8 @@ body::before {
         grid-template-columns: 1fr;
     }
 }
+@media (max-width: 749px) {
+    .breadcrumb-wrapper {
+        display: none;
+    }
+}

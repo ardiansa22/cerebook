@@ -10,7 +10,7 @@
         <ul class="list-group mt-2">
             @forelse ($books as $book)
                 <li class="list-group-item">
-                    <a href="{{ route('book.show', $book->id) }}">{{ $book->title }}</a>
+                    <a href="{{ route('book.show', $book->id) }}" wire:navigate>{{ $book->title }}</a>
                 </li>
             @empty
                 <li class="list-group-item text-muted">Buku tidak ditemukan.</li>

@@ -26,7 +26,7 @@
                 ];
             @endphp
             
-            <a href="{{ route('showbook', $rental->id) }}" class="text-decoration-none text-dark">
+            <a href="{{ route('showbook', $rental->id) }}" wire:navigate class="text-decoration-none text-dark">
                 <div class="card sesi-card shadow-sm p-3 mt-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <!-- Gambar Buku -->
