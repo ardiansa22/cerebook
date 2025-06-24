@@ -177,7 +177,7 @@ class CartComponent extends MainBase
 
         $params = [
             'transaction_details' => [
-                'order_id' => 'test1-' . $rental->id,
+                'order_id' => 'test2-' . $rental->id,
                 'gross_amount' => $totalAmount,
             ],
             'customer_details' => [
