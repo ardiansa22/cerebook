@@ -33,7 +33,7 @@ class MidtransController extends Controller
             throw new \Exception('Invalid signature key');
         }
 
-        // Ekstrak rental_id dari order_id (format: RENTAL-{id})
+        // Ekstrak rental_id dari order_id (
         $rentalId = str_replace('test1-', '', $request->order_id);
         
         DB::transaction(function () use ($request, $rentalId) {
