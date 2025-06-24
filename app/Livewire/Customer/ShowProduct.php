@@ -102,7 +102,6 @@ class ShowProduct extends MainBase
 
                 $rental = Rental::create([
                     'user_id' => Auth::id(),
-                    'book_id' => $book->id,
                     'rental_date' => $this->rental_date,
                     'return_date' => $this->return_date,
                     'status' => 'rented',

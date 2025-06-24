@@ -20,8 +20,11 @@ class MidtransController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function callback(Request $request)
-    {try {
-        // Verifikasi signature dari Midtrans
+{
+    try {
+        Log::info('Midtrans Callback Received:', $request->all());
+        
+        // Verifikasi signature
         $hashed = hash('sha512', 
             $request->order_id . 
             $request->status_code . 
@@ -30,50 +33,49 @@ class MidtransController extends Controller
         );
         
         if ($hashed != $request->signature_key) {
+            Log::error('Invalid signature key');
             throw new \Exception('Invalid signature key');
         }
 
-        // Ekstrak rental_id dari order_id (
+        Log::info('Signature verified');
+        
+        // Ekstrak rental_id
         $rentalId = str_replace('test2-', '', $request->order_id);
+        Log::info('Extracted Rental ID:', ['rentalId' => $rentalId]);
         
         DB::transaction(function () use ($request, $rentalId) {
-            // Temukan rental   
             $rental = Rental::with('items')->findOrFail($rentalId);
+            Log::info('Found Rental:', ['rental' => $rental]);
             
-            // Update berdasarkan status transaksi Midtrans
             switch ($request->transaction_status) {
                 case 'capture':
                 case 'settlement':
-                    // Pembayaran berhasil
+                    Log::info('Payment successful');
                     Payment::where('rental_id', $rental->id)
                         ->update([
                             'status' => 'paid',
                             'payment_date' => now(),
                         ]);
                     
-                    // Tidak perlu update status rental karena default sudah 'rented'
-                    // Tapi bisa tambahkan logika jika perlu
+                    // Update rental status
+                    $rental->update(['status' => 'confirmed']);
                     
-                    // Kurangi stok buku
+                    // Kurangi stok
                     $book = Book::findOrFail($rental->book_id);
                     $book->decrement('stock', $rental->items->first()->quantity);
+                    Log::info('Stock decremented');
                     break;
                     
                 case 'deny':
                 case 'expire':
                 case 'cancel':
-                    // Pembayaran gagal
+                    Log::info('Payment failed');
                     Payment::where('rental_id', $rental->id)
                         ->update([
                             'status' => 'failed',
                         ]);
                     
-                    // Update status rental menjadi cancelled
                     $rental->update(['status' => 'cancelled']);
-                    break;
-                    
-                case 'pending':
-                    // Pembayaran pending - tidak perlu action karena default payment status sudah pending
                     break;
             }
         });
@@ -84,5 +86,5 @@ class MidtransController extends Controller
         Log::error('Midtrans callback error: ' . $e->getMessage());
         return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
     }
-    }
+}
 }
