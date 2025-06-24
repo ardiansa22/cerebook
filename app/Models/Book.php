@@ -24,9 +24,7 @@ class Book extends Model
     public function rentalItems() {
     return $this->hasMany(RentalItem::class);
     }
-    public function rentals() {
-    return $this->hasMany(Rental::class);
-    }
+
 
     public function reviews() {
         return $this->hasMany(BookReview::class);

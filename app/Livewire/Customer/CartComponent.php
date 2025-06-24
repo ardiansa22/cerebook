@@ -103,107 +103,116 @@ class CartComponent extends MainBase
     }
         
     public function checkout()
-    {
-        if (empty($this->selectedItems)) {
-            session()->flash('error', 'Pilih minimal satu item untuk checkout.');
-            return;
-        }
+{
+    if (empty($this->selectedItems)) {
+        session()->flash('error', 'Pilih minimal satu item untuk checkout.');
+        return;
+    }
 
-        $items = Cart::whereIn('id', $this->selectedItems)
-            ->where('user_id', Auth::id())
-            ->with('book')
-            ->get();
+    $items = Cart::whereIn('id', $this->selectedItems)
+        ->where('user_id', Auth::id())
+        ->with('book')
+        ->get();
 
-        DB::beginTransaction();
+    DB::beginTransaction();
 
-     
-            $rentals = [];
-            $totalAmount = 0;
+    try {
+        $totalAmount = 0;
 
-            foreach ($items as $item) {
-                if ($item->quantity > $item->book->stock) {
-                    session()->flash('error', 'Stok buku "' . $item->book->title . '" tidak mencukupi.');
-                    DB::rollBack();
-                    return;
-                }
-
-                $rentalDays = Carbon::parse($item->rental_date)->diffInDays($item->return_date);
-                $totalPrice = $rentalDays * $item->book->final_price * $item->quantity;
-                $totalAmount += $totalPrice;
-
-                $rental = Rental::create([
-                    'user_id' => $item->user_id,
-                    'book_id' => $item->book_id,
-                    'rental_date' => $item->rental_date,
-                    'return_date' => $item->return_date,
-                    'total_price' => $totalPrice,
-                    'status' => 'rented',
-                ]);
-
-                RentalItem::create([
-                    'rental_id' => $rental->id,
-                    'book_id' => $item->book_id,
-                    'quantity' => $item->quantity,
-                    'sub_total' => $totalPrice,
-                ]);
-
-                $rentals[] = $rental;
+        // Cek stok dan total
+        foreach ($items as $item) {
+            if ($item->quantity > $item->book->stock) {
+                DB::rollBack();
+                session()->flash('error', 'Stok buku "' . $item->book->title . '" tidak mencukupi.');
+                return;
             }
 
-            // Create single payment for all rentals
-            $payment = Payment::create([
+            $rentalDays = max(Carbon::parse($item->rental_date)->diffInDays(Carbon::parse($item->return_date)), 1);
+            $totalAmount += $rentalDays * $item->book->final_price * $item->quantity;
+        }
+
+        // Buat satu Rental utama
+        $firstItem = $items->first();
+
+        $rental = Rental::create([
+            'user_id' => Auth::id(),
+            'rental_date' => $firstItem->rental_date,
+            'return_date' => $firstItem->return_date,
+            'total_price' => $totalAmount,
+            'status' => 'rented',
+        ]);
+
+        // Tambahkan semua item
+        foreach ($items as $item) {
+            $book = $item->book;
+
+            $rentalDays = max(Carbon::parse($item->rental_date)->diffInDays(Carbon::parse($item->return_date)), 1);
+            $subTotal = $book->final_price * $item->quantity * $rentalDays;
+
+            RentalItem::create([
                 'rental_id' => $rental->id,
-                'payment_date' => now(),
-                'amount' => $totalAmount,
-                'method' => $this->paymentMethod,
-                'status' => 'pending',
+                'book_id' => $book->id,
+                'quantity' => $item->quantity,
+                'sub_total' => $subTotal,
             ]);
 
+            // Kurangi stok
+            $book->decrement('stock', $item->quantity);
+        }
 
+        // Buat payment
+        $payment = Payment::create([
+            'rental_id' => $rental->id,
+            'payment_date' => now(),
+            'amount' => $totalAmount,
+            'method' => $this->paymentMethod,
+            'status' => 'pending',
+        ]);
 
-            // Midtrans integration
-            \Midtrans\Config::$serverKey = config('midtrans.server_key');
-            \Midtrans\Config::$isProduction = false;
-            \Midtrans\Config::$isSanitized = true;
-            \Midtrans\Config::$is3ds = true;
+        // Midtrans config
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = false;
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
 
-            $params = [
-                'transaction_details' => [
-                    'order_id' => 'RENT-' . $rental->id,
-                    'gross_amount' => $totalAmount,
-                ],
-                'customer_details' => [
-                    'first_name' => Auth::user()?->name ?? 'Guest',
-                    'email' => Auth::user()?->email ?? 'guest@example.com',
-                    'phone' => Auth::user()?->phone ?? '0811111111',
-                ],
-            ];
+        $params = [
+            'transaction_details' => [
+                'order_id' => 'test1-' . $rental->id,
+                'gross_amount' => $totalAmount,
+            ],
+            'customer_details' => [
+                'first_name' => Auth::user()->name ?? 'Guest',
+                'email' => Auth::user()->email ?? 'guest@example.com',
+                'phone' => Auth::user()->phone ?? '0811111111',
+            ],
+        ];
 
-            $snapToken = \Midtrans\Snap::getSnapToken($params);
-            
-            // Update payment with snap token
-            $payment->update([
-                'snap_token' => $snapToken
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+Payment::where('rental_id', $rental->id)->update([
+                'snap_token' => $snapToken // tambahkan ini, pastikan kolomnya ada
             ]);
 
-            // Delete cart items only after successful payment creation
-            Cart::whereIn('id', $this->selectedItems)->delete();
-            
-            $this->showRentalModal = false;
-            $this->selectedItems = [];
+        // Bersihkan keranjang
+        Cart::whereIn('id', $this->selectedItems)->delete();
 
-            DB::commit();
+        DB::commit();
 
-            $this->dispatch('midtrans:pay', [
-                'snapToken' => $snapToken
-            ]);
-            $this->dispatch('swal:success', [
+        $this->showRentalModal = false;
+        $this->selectedItems = [];
+
+        $this->dispatch('midtrans:pay', ['snapToken' => $snapToken]);
+        $this->dispatch('swal:success', [
             'icon' => 'success',
             'title' => 'Berhasil!',
             'text' => 'Buku berhasil disewa',
         ]);
 
+    } catch (\Exception $e) {
+        DB::rollBack();
+        session()->flash('error', 'Checkout gagal: ' . $e->getMessage());
     }
+}
+
 
     public function getTotalSelectedPriceProperty()
     {
