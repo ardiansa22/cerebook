@@ -49,6 +49,7 @@ class MidtransController extends Controller
             
             switch ($request->transaction_status) {
                 case 'capture':
+                case 'success':
                 case 'settlement':
                     Log::info('Payment successful');
                     Payment::where('rental_id', $rental->id)
