@@ -68,7 +68,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             @foreach ($loan->items as $detail)
-                                {{ $detail->book->name }}
+                                {{ $detail->book->title }}
                             @endforeach
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -151,7 +151,13 @@
                             <flux:input type="text" label="Nama Peminjam" :value="$selectedRental?->user?->name" disabled />
                         </div>
                         <div>
-                            <flux:input type="text" label="Judul Buku" :value="$selectedRental?->book?->title" disabled />
+                           <flux:input
+                                type="text"
+                                label="Judul Buku"
+                                :value="$selectedRental ? $selectedRental->items->pluck('book.title')->join(', ') : ''"
+                                disabled
+                            />
+
                         </div>
                         <div>
                             <flux:input type="text" label="Total Price" :value="$selectedRental?->total_price" disabled />

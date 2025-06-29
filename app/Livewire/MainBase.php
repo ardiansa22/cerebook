@@ -113,6 +113,7 @@ abstract class MainBase extends Component
         $this->validate($this->getValidationRules());
         
         $data = $this->fields;
+        // dd($data);
         // Buat record utama
         $record = $this->model::create($data);
 
@@ -184,6 +185,7 @@ public function update($id)
     // Open modal for creating
     public function openCreateModal()
     {
+        
         $this->resetInput();
         $this->modalTitle = 'Create ' . class_basename($this->model);
         $this->isEdit = false;

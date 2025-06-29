@@ -33,10 +33,19 @@ class BreadcrumbComponent extends Component
                 $this->items[] = ['label' => 'Keranjang'];
                 break;
 
+            case 'search':
+            $query = request()->query('query');
+            $this->items[] = ['label' => 'Pencarian'];
+            if ($query) {
+                $this->items[] = ['label' => $query];
+            }
+            break;
+
             case 'categori.book':
                 $kategori = request()->route('categori');
-                $this->items[] = ['label' => $kategori];
+                $this->items[] = ['label' => $kategori->name]; // ambil nama, bukan objek
                 break;
+
         }
     }
 

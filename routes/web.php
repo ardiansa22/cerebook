@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BookSeachController;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -31,6 +32,8 @@ Route::middleware(['auth', 'role:customer', 'verified'])->group(function () {
     Route::get('/Explore/{categori:name}', ExploreBook::class)->name('categori.book');
     Route::get('/keranjang', CartComponent::class)->name('keranjang');
     Route::get('/my-boos/{id}', ShowBookDetails::class)->name('showbook');
+    Route::get('/search', [BookSeachController::class, 'results'])->name('search');
+    
 });
 Route::middleware(['auth', 'role:admin', 'verified'])->group(function () {
     Route::get('dashboard', Dashboard::class)->name('dashboard');

@@ -3,24 +3,37 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use App\Models\Book;
 
 class BookSearch extends Component
 {
-    public $query = ''; // Ubah dari string $query menjadi $query saja
+    public $query = '';
+
+    public function search()
+    {
+        // Redirect ke halaman pencarian dengan query sebagai parameter
+        return redirect()->route('search', ['query' => $this->query]);
+    }
+    public function goToResult()
+{
+    if (strlen($this->query) >= 2) {
+        return redirect()->route('search', ['query' => $this->query]);
+    }
+}
+
 
     public function render()
-    {
-        $books = [];
+{
+    $books = [];
 
-        if (strlen($this->query) >= 2) {
-            $books = Book::where('title', 'like', '%' . $this->query . '%')
-                        ->limit(10) // Batasi hasil untuk performa
-                        ->get();
-        }
-
-        return view('livewire.book-search', [
-            'books' => $books
-        ]);
+    if (strlen($this->query) >= 2) {
+        $books = Book::where('title', 'like', '%' . $this->query . '%')
+                     ->limit(10)
+                     ->get();
     }
+
+    return view('livewire.book-search', [
+        'books' => $books,
+    ]);
+}
+
 }

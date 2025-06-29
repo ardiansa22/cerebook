@@ -115,6 +115,14 @@
                             id="password"
                         />
                     </div>
+                    <div>
+                        <flux:input
+                            type="password"
+                            label="Konfirmasi Password"
+                            wire:model="fields.password_confirmation"
+                            id="password_confirmation"
+                        />
+                    </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
                         <select wire:model="fields.role" id="role" class="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200">

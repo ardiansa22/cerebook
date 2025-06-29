@@ -30,7 +30,8 @@ class Loan extends MainBase
 
     public function openReturnModal($id)
     {
-        $this->selectedRental = Rental::with(['book', 'user'])->findOrFail($id);
+        $this->selectedRental = Rental::with(['items.book', 'user'])->findOrFail($id);
+
         $this->returnDate = now()->format('Y-m-d');
         $this->actualReturnDate = now()->format('Y-m-d');
         $this->return_evidence = null;
@@ -55,20 +56,28 @@ class Loan extends MainBase
 
     public function calculateFine()
     {
-        $this->validate(['actualReturnDate' => 'required|date']);
+       $this->validate(['actualReturnDate' => 'required|date']);
 
         $actualReturnDate = Carbon::parse($this->actualReturnDate);
         $estimatedReturnDate = Carbon::parse($this->selectedRental->return_date);
 
         if ($actualReturnDate->gt($estimatedReturnDate)) {
             $this->lateDays = $actualReturnDate->diffInDays($estimatedReturnDate);
-            $this->fineAmount = $this->lateDays * 1000;
+
+            $this->fineAmount = 0;
+            foreach ($this->selectedRental->items as $item) {
+                if ($item->book) {
+                    $this->fineAmount += $this->lateDays * $item->book->fines_price;
+                }
+            }
+
             $this->showFineDetails = true;
         } else {
             $this->showFineDetails = false;
             $this->fineAmount = 0;
             $this->lateDays = 0;
         }
+
     }
 
     public function processReturn()
@@ -91,18 +100,23 @@ class Loan extends MainBase
 
         $fineAmount = 0;
         if ($actualReturnDate->gt($estimatedReturnDate)) {
-            $lateDays = $actualReturnDate->diffInDays($estimatedReturnDate);
-            $finesPerDay = $rental->book->fines_price ?? 0;
-            $fineAmount = $lateDays * $finesPerDay;
+        $lateDays = $actualReturnDate->diffInDays($estimatedReturnDate);
 
-            Fines::create([
-                'rental_id' => $rental->id,
-                'fine_amount' => $fineAmount,
-                'days_late' => $lateDays,
-                'payment_method' => $this->paymentMethod,
-                'is_paid' => true,
-            ]);
+        foreach ($rental->items as $item) {
+            if ($item->book) {
+                $finesPerDay = $item->book->fines_price ?? 0;
+                $fineAmount += $lateDays * $finesPerDay;
+            }
         }
+
+        Fines::create([
+            'rental_id' => $rental->id,
+            'fine_amount' => $fineAmount,
+            'days_late' => $lateDays,
+            'payment_method' => $this->paymentMethod,
+            'is_paid' => true,
+        ]);
+    }
 
         $path = $this->return_evidence->store('return_evidence', 'public');
 

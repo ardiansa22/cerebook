@@ -6,12 +6,10 @@
     @include('layouts.component.confirmdelete')
     
     <div class="mb-6">
-        <!-- Judul halaman dan aksi -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
             <div>
                 <h2 class="text-2xl font-semibold text-gray-800">Discount</h2>
 
-                <!-- Breadcrumb dengan jarak -->
                 <div class="mt-2">
                     @include('layouts.component.breadcrumb', [
                         'breadcrumbs' => [
@@ -22,7 +20,6 @@
                 </div>
             </div>
 
-            <!-- Tombol aksi -->
             <div class="flex space-x-4">
                 @include('layouts.component.createdel')
                 <flux:button 
@@ -123,16 +120,13 @@
     <div class="mt-4">
         {{ $discounts->links() }}
     </div>
-
     @if($showModal)
         <div class="fixed inset-0 z-[9999] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <!-- Background overlay -->
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
-                     aria-hidden="true"
-                     wire:click="$set('showModal', false)"></div>
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                    aria-hidden="true"
+                    wire:click="$set('showModal', false)"></div>
 
-                <!-- Modal content -->
                 <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full relative z-[99999]">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
@@ -140,51 +134,56 @@
                         </h3>
 
                         <div class="space-y-4">
-                            <!-- Input tanggal -->
                             <div>
                                 <label for="start_date" class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
-                                <input type="date" 
-                                       wire:model="fields.start_date" 
-                                       id="start_date" 
+                                <input type="date"
+                                       wire:model.live="fields.start_date" {{-- Tambahkan .live --}}
+                                       id="start_date"
                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                        required>
-                                @error('fields.start_date') 
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p> 
-                                @enderror
-                            </div>
-                            
-                            <div>
-                                <label for="end_date" class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
-                                <input type="date" 
-                                       wire:model="fields.end_date" 
-                                       id="end_date" 
-                                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                       required>
-                                @error('fields.end_date') 
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p> 
-                                @enderror
-                            </div>
-                            
-                            <div>
-                                <label for="book_id" class="block text-sm font-medium text-gray-700">Pilih Buku</label>
-                                <select 
-                                    wire:model="fields.book_id" 
-                                    id="book_id"
-                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                    required
-                                >
-                                    <option value="">-- Pilih Buku --</option>
-                                    @foreach($books as $book)
-                                        <option value="{{ $book->id }}">{{ $book->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('fields.book_id')
+                                @error('fields.start_date')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <!-- Input diskon -->
                             <div>
+                                <label for="end_date" class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
+                                <input type="date"
+                                       wire:model.live="fields.end_date" {{-- Tambahkan .live --}}
+                                       id="end_date"
+                                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                       required>
+                                @error('fields.end_date')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="book_id" class="block text-sm font-medium text-gray-700">Pilih Buku</label>
+                                @if($isEdit)
+                                    <input type="text"
+                                           value="{{ $this->model::find($editingId)->book->name ?? '' }}"
+                                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100 cursor-not-allowed"
+                                           disabled>
+                                    <input type="hidden" wire:model="fields.book_id">
+                                @else
+                                    <select
+                                        wire:model="fields.book_id"
+                                        id="book_id"
+                                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                        required
+                                    >
+                                        <option value="">-- Pilih Buku --</option>
+                                        @foreach($books as $book)
+                                            <option value="{{ $book->id }}">{{ $book->name }}</option>
+                                        @endforeach
+                                    </select>
+                                @endif
+                                @error('fields.book_id')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                              <div>
                                 <label for="percentage" class="block text-sm font-medium text-gray-700">Diskon (%)</label>
                                 <input 
                                     type="number" 
@@ -216,7 +215,11 @@
                             </button>
                         </div>
                     </div>
-                </div>
+
+                            </div>
+                    </div>
+
+                    </div>
             </div>
         </div>
     @endif
