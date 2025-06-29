@@ -49,8 +49,8 @@ protected function getValidationRules()
 {
     return [
         'fields.percentage' => 'required|numeric|min:1|max:100',
-        'fields.start_date' => 'required|date',
-        'fields.end_date' => 'required|date|after_or_equal:fields.start_date',
+        'fields.start_date' => 'required|date|after_or_equal:today',
+        'fields.end_date' => 'required|date|after_or_equal:fields.start_date|after_or_equal:today',
         'fields.book_id' => [
             'required',
             'exists:books,id',
@@ -61,24 +61,14 @@ protected function getValidationRules()
                 $existingDiscount = Discount::where('book_id', $value)
                     ->where(function ($query) use ($startDate, $endDate) {
                         $query->where(function ($q) use ($startDate, $endDate) {
-                            // Kasus 1: Rentang yang ada tumpang tindih dengan rentang baru
-                            // start_date existing antara start_date baru dan end_date baru
-                            // ATAU end_date existing antara start_date baru dan end_date baru
                             $q->whereBetween('start_date', [$startDate, $endDate])
                                 ->orWhereBetween('end_date', [$startDate, $endDate]);
                         })->orWhere(function ($q) use ($startDate, $endDate) {
-                            // Kasus 2: Rentang baru di dalam rentang yang ada
-                            // start_date existing lebih awal dari start_date baru DAN end_date existing lebih lambat dari end_date baru
                             $q->where('start_date', '<', $startDate)
                                 ->where('end_date', '>', $endDate);
                         });
-                        // Kasus 3: Rentang yang ada di dalam rentang baru (tidak perlu penambahan logika karena sudah tercover oleh kasus 1)
-                        // start_date baru lebih awal dari start_date existing DAN end_date baru lebih lambat dari end_date existing
-                        // Ini sudah tercover oleh logika whereBetween jika Anda menggunakan BETWEEN (startDate, endDate)
-                        // Jika Anda ingin lebih eksplisit, Anda bisa menambahkannya, tetapi umumnya tidak perlu.
                     })
                     ->when($this->editingId, function ($query) {
-                        // Saat mengedit, abaikan diskon yang sedang diedit agar tidak memvalidasi diri sendiri
                         $query->where('id', '!=', $this->editingId);
                     })
                     ->first();
@@ -90,6 +80,7 @@ protected function getValidationRules()
         ],
     ];
 }
+
 
     public function render()
     {
@@ -163,10 +154,10 @@ protected function getValidationRules()
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->showNotification('Gagal menyimpan diskon. Periksa kembali input Anda.', 'error');
-            $this->showModal = true;
+            $this->showModal = false;
         } catch (\Throwable $e) {
             $this->showNotification('Terjadi kesalahan: ' . $e->getMessage(), 'error');
-            $this->showModal = true;
+            $this->showModal = false;
         }
     }
 
