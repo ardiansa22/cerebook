@@ -27,15 +27,29 @@ class CartComponent extends MainBase
     
 
 
-public function mount()
-{
-    $this->cartItems = Cart::with(['book' => function ($query) {
-        $query->select('id', 'title', 'image'); // Ambil hanya kolom yang diperlukan
-    }])->where('user_id', Auth::id())->get();
+    public function mount()
+    {
+        // Hapus otomatis item dengan rental_date di masa lalu
+        Cart::where('user_id', Auth::id())
+            ->whereDate('rental_date', '<', now())
+            ->delete();
+        if (Cart::where('user_id', Auth::id())->whereDate('rental_date', '<', now())->exists()) {
+            Cart::where('user_id', Auth::id())
+                ->whereDate('rental_date', '<', now())
+                ->delete();
 
-    // Inisialisasi quantities
-    $this->quantities = $this->cartItems->pluck('quantity', 'id')->toArray();
-}
+            session()->flash('message', 'Beberapa item dengan tanggal sewa yang telah lewat telah dihapus dari keranjang.');
+        }
+
+        // Ambil ulang data cart yang valid
+        $this->cartItems = Cart::with(['book' => function ($query) {
+            $query->select('id', 'title', 'image');
+        }])->where('user_id', Auth::id())->get();
+
+        // Inisialisasi quantities
+        $this->quantities = $this->cartItems->pluck('quantity', 'id')->toArray();
+    }
+
 
 
     public function updateQuantity($itemId, $newQuantity)
@@ -55,6 +69,7 @@ public function mount()
 
         public function OpenRentalModal()
 {
+    
     if (empty($this->selectedItems)) {
         session()->flash('error', 'Pilih minimal satu item untuk checkout.');
         return;
@@ -83,6 +98,7 @@ public function mount()
         
     public function checkout()
     {
+        
         if (empty($this->selectedItems)) {
             $this->dispatch('swal:success', [
                         'icon' => 'success',

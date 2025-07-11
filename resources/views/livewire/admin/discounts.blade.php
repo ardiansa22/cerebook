@@ -25,7 +25,7 @@
                 <flux:button 
                     size="xs" 
                     wire:click="toggleStatus" 
-                    class="bg-gradient-to-r from-blue-500 via-green-300 to-green-200 text-white hover:from-blue-600 hover:to-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    class="bg-gradient-to-r from-blue-500 via-blue-300 to-blue-200 text-white hover:from-blue-600 hover:to-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Aktif/nonaktif ({{ count($selectedIds) }})
                 </flux:button>
             </div>
@@ -93,7 +93,7 @@
                         </td>
                         <td class="px-6 py-4">
                             <flux:badge
-                                class="px-2 py-1 rounded text-white text-sm {{ $discount->is_active ? 'bg-gradient-to-r from-green-200 to-green-400' : 'bg-gradient-to-r from-red-400 to-red-600' }}">
+                                class="px-2 py-1 rounded text-white text-sm {{ $discount->is_active ? 'bg-gradient-to-r from-blue-500 to-blue-400' : 'bg-gradient-to-r from-red-600 to-red-600' }}">
                                 {{ $discount->is_active ? 'Aktif' : 'Nonaktif' }}
                             </flux:badge>
                         </td>

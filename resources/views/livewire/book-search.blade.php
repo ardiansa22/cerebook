@@ -4,17 +4,25 @@
             type="text"
             class="form-control"
             placeholder="Search Your Favorite Book.."
-            wire:model="query"
+            wire:model.live.debounce.300ms="query"
             wire:keydown.enter.prevent="goToResult" 
         >
+
     </form>
 
     @if(strlen($query) >= 2)
         <ul class="list-group mt-2">
             @forelse ($books as $book)
                 <li class="list-group-item">
-                    <a href="{{ route('book.show', $book->id) }}" wire:navigate>
-                        {{ $book->title }}
+                    @php
+                        $highlighted = preg_replace(
+                            '/(' . preg_quote($query, '/') . ')/i',
+                            '<strong>$1</strong>',
+                            $book->title
+                        );
+                    @endphp
+                    <a href="{{ route('book.show', $book->id) }}" wire:navigate class="text-dark text-decoration-none">
+                        {!! $highlighted !!}
                     </a>
                 </li>
             @empty
@@ -22,4 +30,5 @@
             @endforelse
         </ul>
     @endif
+
 </div>

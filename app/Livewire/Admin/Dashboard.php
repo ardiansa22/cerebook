@@ -4,27 +4,28 @@ namespace App\Livewire\Admin;
 
 use App\Livewire\MainBase;
 use App\Models\Book;
-use App\Models\Product;
-use App\Models\Transaction;
-use App\Models\Userbook;
-use Livewire\Component;
+use App\Models\Rental;
 
 class Dashboard extends MainBase
 {
     public function render()
     {
-        $transactions = Transaction::paginate(10); // tambahkan pagination jika diperlukan
+        $totalBookProducts = Book::count();
 
-        $totalBookProducts = Book::all()->count(); // sesuaikan nama kolom 'type' jika berbeda
-        $totalNonBookProducts = Product::all()->count(); // sesuaikan juga
-        $totalTransactions = Transaction::count();
+        // Ambil data rental dengan status rented atau late yang sudah dibayar
+       $loans = Rental::with(['items.book', 'user', 'fine', 'payment'])
+        ->whereIn('status', ['rented', 'late'])
+        ->whereHas('payment', function ($q) {
+            $q->where('status', 'paid');
+        })
+        ->latest() // urutkan berdasarkan created_at descending
+        ->paginate($this->perPage);
+
+
 
         return view('dashboard', [
-            'transactions' => $transactions,
             'totalBookProducts' => $totalBookProducts,
-            'totalNonBookProducts' => $totalNonBookProducts,
-            'totalTransactions' => $totalTransactions,
+            'loans' => $loans,
         ]);
     }
-
 }

@@ -6,8 +6,8 @@
     </head>
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
-    <flux:sidebar sticky stashable 
-    class="bg-green-200 dark:bg-green-900 border-r rtl:border-r-0 rtl:border-l border-green-300 dark:border-green-800">
+    <flux:sidebar sticky stashable
+    class="bg-[#1E3E62] border-r rtl:border-r-0 rtl:border-l border-[#0B192C] text-white">
 
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
@@ -15,15 +15,15 @@
         <flux:brand href="#" logo="https://matapangandaran.my.id/images/logo.png" name="CereBook." class="px-2 hidden dark:flex" />
 
         <flux:navlist variant="outline">
-            <flux:navlist.item icon="home" href="/dashboard" wire:navigate>Home</flux:navlist.item>
-             <flux:navlist.group expandable heading="Book Management" class="hidden lg:grid">
-                <flux:navlist.item icon="inbox" href="/book" wire:navigate>Book</flux:navlist.item>
-                <flux:navlist.item icon="document-text" href="/categories" wire:navigate>Categori</flux:navlist.item>
+            <flux:navlist.item icon="home" href="/dashboard" wire:navigate>Beranda</flux:navlist.item>
+             <flux:navlist.group expandable heading="Manajemen Data" class="hidden lg:grid">
+                <flux:navlist.item icon="inbox" href="/book" badge="{{ $totalBooks }}" wire:navigate>Buku</flux:navlist.item>
+                <flux:navlist.item icon="document-text" href="/categories"  wire:navigate>Categori</flux:navlist.item>
                 <flux:navlist.item icon="calendar" href="/genre" wire:navigate>Genre</flux:navlist.item>
-                <flux:navlist.item icon="calendar" href="/discount" wire:navigate>Discount</flux:navlist.item>
+                <flux:navlist.item icon="calendar" href="/discount" wire:navigate>Diskon</flux:navlist.item>
             </flux:navlist.group>
-             <flux:navlist.group expandable heading="Borrowing" class="hidden lg:grid">
-                <flux:navlist.item icon="inbox" href="/loan" wire:navigate>Data Peminjaman</flux:navlist.item>
+             <flux:navlist.group expandable heading="Peminjaman" class="hidden lg:grid">
+                <flux:navlist.item icon="inbox" href="/loan" badge="{{ $totalLoans }}" wire:navigate>Data Peminjaman</flux:navlist.item>
                 <flux:navlist.item icon="document-text" href="/return" wire:navigate>Pengembalian Buku</flux:navlist.item>
             </flux:navlist.group>
              <flux:navlist.group expandable heading="Pengguna" class="hidden lg:grid">

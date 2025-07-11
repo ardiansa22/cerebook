@@ -74,6 +74,7 @@ class Books extends MainBase
         $this->reset(['selectedfilterGenre', 'selectedfilterCategory', 'search']);
         $this->resetPage();
     }
+    
     public function updatedFields($value, $key)
     {
         if ($key === 'price' && is_numeric($value)) {
@@ -86,10 +87,6 @@ class Books extends MainBase
             $this->fields['fines_price'] = $finesPrice;
         }
     }
-
-
-
-
     public function render()
 {
     $query = Book::with(['category', 'genres']);

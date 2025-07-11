@@ -53,16 +53,26 @@ abstract class MainBase extends Component
 
     // Generic query builder with optional search
     public function getQuery($model)
-    {
-        return $model::query()
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    foreach ($this->searchableFields as $field) {
+{
+    return $model::query()
+        ->when($this->search, function ($query) {
+            $query->where(function ($q) {
+                foreach ($this->searchableFields as $field) {
+                    if (str_contains($field, '.')) {
+                        // Relasi: contoh user.name
+                        [$relation, $column] = explode('.', $field);
+                        $q->orWhereHas($relation, function ($qr) use ($column) {
+                            $qr->where($column, 'like', '%' . $this->search . '%');
+                        });
+                    } else {
+                        // Kolom langsung
                         $q->orWhere($field, 'like', '%' . $this->search . '%');
                     }
-                });
+                }
             });
-    }
+        });
+}
+
     public function showModal()
     {
         $this->showModal = true;

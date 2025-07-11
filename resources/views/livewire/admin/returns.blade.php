@@ -21,7 +21,7 @@
         </div>
     </div>
   <div class="mb-4">
-        <!-- @include('layouts.component.searchtable') -->
+        @include('layouts.component.searchtable')
         <label class="text-sm text-gray-700">
             Show
             <select wire:model.live="perPage" class="ml-2 border rounded p-1">
@@ -38,7 +38,6 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No Transaksi</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Peminjam</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Buku</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Pengembalian</th>
@@ -52,9 +51,6 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {{ $returnedRentals ->firstItem() + $index }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                           TSAJA {{ $returnedRentals ->firstItem() + $index }}201EJ
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             {{ $return->user->name}}

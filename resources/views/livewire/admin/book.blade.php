@@ -6,7 +6,7 @@
     <!-- Judul halaman dan aksi -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
             <div>
-                <h2 class="text-2xl font-semibold text-gray-800">Categories</h2>
+                <h2 class="text-2xl font-semibold text-gray-800">Books</h2>
 
                 <!-- Breadcrumb dengan jarak -->
                 <div class="mt-2">
@@ -205,17 +205,15 @@
                             {{-- ... bagian lain dari kode Anda ... --}}
 
                             <div>
-                                <flux:input type="number" label="Price Book" wire:model.live="fields.price"
-                                    id="price"/> {{-- Tambahkan .live di sini --}}
+                                <flux:input type="number" label="Price Book" wire:model.live.debounce.500ms="fields.price" id="price"/>
                                 @error('fields.price')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
-                                {{-- Tambahkan wire:key di sini, gunakan fields.price sebagai bagian dari kunci --}}
                                 <flux:input type="number" label="Rent Price" wire:model="fields.rent_price" id="rent_price" readonly
-                                    wire:key="rent-price-{{ $fields['price'] }}"
+                                    wire:key="rent-price-{{ $fields['price'] ?? 0 }}"
                                 />
                                 <p class="mt-1 text-sm text-gray-500">Rent price will be automatically calculated as 35% of the book price.</p>
                                 @error('fields.rent_price')
@@ -224,9 +222,8 @@
                             </div>
 
                             <div>
-                                {{-- Tambahkan wire:key di sini, gunakan fields.price sebagai bagian dari kunci --}}
                                 <flux:input type="number" label="Fines Price" wire:model="fields.fines_price" id="fines_price" readonly
-                                    wire:key="fines-price-{{ $fields['price'] }}"
+                                    wire:key="fines-price-{{ $fields['price'] ?? 0 }}"
                                 />
                                 <p class="text-sm text-gray-500 mt-1">Fines will automatically appear when Price Book is filled</p>
                                 @error('fields.fines_price')

@@ -20,14 +20,24 @@ class Loan extends MainBase
     public $showFineDetails = false;
     public $fineAmount = 0;
     public $lateDays = 0;
+
     public $paymentMethod = 'cash'; // Default payment method
 
     public function mount()
     {
         $this->model = Rental::class;
-        $this->searchableFields = ['id'];
-    }
+        $this->fields = [
+            'id' => '',
+        ];
 
+        $this->searchableFields = [
+        'id',
+        'user.name',
+        'items.book.title',
+        'status',
+        'return_date'
+    ];
+    }
     public function openReturnModal($id)
     {
         $this->selectedRental = Rental::with(['items.book', 'user'])->findOrFail($id);
@@ -159,11 +169,42 @@ class Loan extends MainBase
         }
 
         // Ambil data rented dan late yang sudah dibayar
-        $query = Rental::with(['book', 'user', 'items', 'fine', 'payment'])
+        $query = Rental::with(['user', 'items.book', 'fine', 'payment'])
             ->whereIn('status', ['rented', 'late'])
             ->whereHas('payment', function ($q) {
                 $q->where('status', 'paid');
             });
+
+        if ($this->search) {
+            $query->where(function ($q) {
+                foreach ($this->searchableFields as $field) {
+                    if (str_contains($field, '.')) {
+                        $parts = explode('.', $field);
+                        
+                        if (count($parts) === 2) {
+                            [$relation, $column] = $parts;
+
+                            $q->orWhereHas($relation, function ($qr) use ($column) {
+                                $qr->where($column, 'like', '%' . $this->search . '%');
+                            });
+                        } elseif (count($parts) === 3) {
+                            [$relation1, $relation2, $column] = $parts;
+
+                            $q->orWhereHas($relation1, function ($qr1) use ($relation2, $column) {
+                                $qr1->whereHas($relation2, function ($qr2) use ($column) {
+                                    $qr2->where($column, 'like', '%' . $this->search . '%');
+                                });
+                            });
+                        }
+                    } else {
+                        $q->orWhere($field, 'like', '%' . $this->search . '%');
+                    }
+                }
+            });
+        }
+
+
+
 
         $loans = $query->paginate($this->perPage);
 

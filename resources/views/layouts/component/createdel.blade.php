@@ -1,7 +1,7 @@
 <flux:button 
     size="xs" 
     wire:click="openCreateModal" 
-    class="bg-gradient-to-r from-emerald-400 to-emerald-600 text-white font-semibold px-3 py-1 rounded-md text-xs hover:from-emerald-500 hover:to-emerald-700">
+    class="bg-gradient-to-r from-[#00B4D8] to-[#0077B6] text-white font-semibold px-3 py-1 rounded-md text-xs hover:from-[#0096C7] hover:to-[#023E8A]">
     Create New
 </flux:button>
 
@@ -9,7 +9,8 @@
     <flux:button 
         size="xs" 
         wire:click="confirmDeleteSelected" 
-        class="bg-gradient-to-r from-red-500 to-gray-700 text-white font-semibold px-3 py-1 rounded-md text-xs hover:from-red-600 hover:to-gray-800">
+        class="bg-gradient-to-r from-[#EF476F] to-[#2C2C54] text-white font-semibold px-3 py-1 rounded-md text-xs hover:from-[#D62839] hover:to-[#1B1B2F]">
         Delete Selected ({{ count($selectedIds) }})
     </flux:button>
 @endif
+
